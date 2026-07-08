@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekly Tracker</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --paper: #ffffff;
+      --soft: #f7f7f5;
+      --soft-2: #fbfaf8;
+      --text: #1f2328;
+      --muted: #707782;
+      --line: #e8e5df;
+      --ink: #111827;
+      --accent: #6f5cff;
+      --accent-soft: #f0eeff;
+      --green: #108548;
+      --green-soft: #eaf7ef;
+      --amber: #b76e00;
+      --amber-soft: #fff5df;
+      --red: #c83532;
+      --red-soft: #fff0ef;
+      --blue: #1f6feb;
+      --blue-soft: #eef5ff;
+      --shadow: 0 22px 70px rgba(31, 35, 40, 0.08);
+      --shadow-soft: 0 10px 30px rgba(31, 35, 40, 0.06);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(111, 92, 255, 0.08), transparent 30%),
+        radial-gradient(circle at 86% 6%, rgba(255, 210, 122, 0.18), transparent 28%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 54px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1.45fr 0.55fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .hero, .card, .mini-card, .notice {
+      background: rgba(255,255,255,0.88);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      border-radius: var(--radius);
+    }
+
+    .hero {
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 999px;
+      right: -90px;
+      top: -92px;
+      background: linear-gradient(135deg, rgba(111,92,255,.12), rgba(255,202,87,.16));
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--soft-2);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(42px, 7vw, 82px);
+      letter-spacing: -0.07em;
+      line-height: 0.9;
+      color: var(--ink);
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 690px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .side-panel {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      background: var(--ink);
+      color: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .side-panel small { color: rgba(255,255,255,.64); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .side-panel strong { font-size: 32px; line-height: 1; letter-spacing: -.04em; }
+    .side-panel p { margin: 0; color: rgba(255,255,255,.72); line-height: 1.5; }
+
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      border-radius: 999px;
+      padding: 11px 15px;
+      font-weight: 800;
+      background: var(--ink);
+      color: white;
+      box-shadow: 0 10px 20px rgba(17,24,39,.10);
+      transition: .18s ease;
+    }
+    button.secondary { background: var(--soft); color: var(--ink); border: 1px solid var(--line); box-shadow: none; }
+    button:hover { transform: translateY(-1px); }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+    }
+
+    .tab {
+      text-decoration: none;
+      color: var(--text);
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 800;
+      box-shadow: var(--shadow-soft);
+    }
+
+    section { margin-top: 22px; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(26px, 3.6vw, 42px);
+      letter-spacing: -0.045em;
+      color: var(--ink);
+    }
+
+    .section-note { color: var(--muted); font-size: 14px; margin: 6px 0 0; }
+
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .span-8 { grid-column: span 8; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+    .span-12 { grid-column: span 12; }
+
+    .card { padding: 22px; }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .card-title h3 { margin: 0; font-size: 19px; letter-spacing: -.02em; }
+    .pill { font-size: 12px; font-weight: 850; color: var(--muted); background: var(--soft); border: 1px solid var(--line); border-radius: 999px; padding: 6px 9px; white-space: nowrap; }
+
+    .task-list { display: grid; gap: 10px; }
+
+    .task {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--soft-2);
+      transition: .18s ease;
+    }
+    .task:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+    .task input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--accent); flex: 0 0 auto; }
+    .task label { line-height: 1.35; cursor: pointer; flex: 1; }
+    .task.done label { color: var(--muted); text-decoration: line-through; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 850;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .critical { background: var(--red-soft); color: var(--red); border-color: #ffd2cf; }
+    .high { background: var(--amber-soft); color: var(--amber); border-color: #ffe4ad; }
+    .personal { background: var(--green-soft); color: var(--green); border-color: #ccebd7; }
+    .career { background: var(--blue-soft); color: var(--blue); border-color: #cfe2ff; }
+
+    .priority-row {
+      display: grid;
+      grid-template-columns: 116px 1fr 104px 34px;
+      gap: 10px;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .priority-row:last-child { border-bottom: 0; }
+    .priority-row .due { color: var(--muted); font-weight: 750; font-size: 13px; }
+    .priority-row input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+    .day-card { background: var(--soft-2); border: 1px solid var(--line); border-radius: 20px; padding: 15px; }
+    .day-card h4 { margin: 0 0 10px; font-size: 15px; letter-spacing: -.01em; }
+
+    .habit-table { width: 100%; border-collapse: separate; border-spacing: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; }
+    .habit-table th, .habit-table td { padding: 12px 10px; text-align: center; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
+    .habit-table th { background: var(--soft); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .habit-table td:first-child, .habit-table th:first-child { text-align: left; font-weight: 850; }
+    .habit-table tr:last-child td { border-bottom: 0; }
+    .habit-table td:last-child, .habit-table th:last-child { border-right: 0; }
+    .habit-table input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+    .score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .score { padding: 16px; border-radius: 20px; background: var(--soft-2); border: 1px solid var(--line); }
+    .score .top { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 12px; }
+    .score strong { font-size: 15px; }
+    .score span { color: var(--muted); font-size: 13px; font-weight: 800; }
+    .bar { height: 10px; border-radius: 999px; background: #ecebea; overflow: hidden; }
+    .fill { height: 100%; width: 0%; background: var(--ink); border-radius: inherit; transition: width .2s ease; }
+
+    .notice {
+      padding: 18px;
+      background: var(--soft-2);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .notice .icon { font-size: 22px; }
+    .notice p { margin: 0; line-height: 1.5; }
+    .danger { background: #fff7f6; border-color: #ffd8d5; }
+
+    .footer-quote {
+      margin-top: 22px;
+      padding: 24px;
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+    .footer-quote blockquote { margin: 0; font-size: clamp(22px, 3vw, 36px); font-weight: 850; letter-spacing: -.04em; line-height: 1.1; }
+    .footer-quote p { margin: 10px 0 0; color: rgba(255,255,255,.72); }
+
+    @media (max-width: 900px) {
+      header { grid-template-columns: 1fr; }
+      .span-8, .span-6, .span-4 { grid-column: span 12; }
+      .score-grid { grid-template-columns: 1fr 1fr; }
+      .priority-row { grid-template-columns: 1fr; gap: 5px; }
+      .priority-row input { justify-self: start; }
+    }
+
+    @media (max-width: 560px) {
+      .wrap { width: min(100% - 22px, 1180px); padding-top: 18px; }
+      .hero, .card { padding: 18px; }
+      .score-grid { grid-template-columns: 1fr; }
+      .habit-table th, .habit-table td { padding: 10px 6px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="hero">
+        <span class="eyebrow">✦ Week of July 7 – 12, 2026</span>
+        <h1>Weekly Tracker</h1>
+        <p class="subtitle">A clean command centre for Nandana and Sreerag — tasks, tickets, habits, project moves, and tiny life rules in one place.</p>
+        <div class="actions">
+          <button onclick="window.print()">Print / Save PDF</button>
+          <button class="secondary" onclick="resetAll()">Reset checks</button>
+        </div>
+      </div>
+      <div class="side-panel">
+        <small>Current Mode</small>
+        <strong>Stay locked in.</strong>
+        <p>Do the tickets. Clear the work. Keep the life side clean. No chaos tax.</p>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <a class="tab" href="#nandana">Nandana</a>
+      <a class="tab" href="#sreerag">Sreerag</a>
+      <a class="tab" href="#scoreboard">Scoreboard</a>
+      <a class="tab" href="#rules">Rules</a>
+    </nav>
+
+    <section id="nandana">
+      <div class="section-head">
+        <div>
+          <h2>🌸 Nandana</h2>
+          <p class="section-note">Priority work, weekly habits, growth, weekend reset, and project research.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card span-8">
+          <div class="card-title"><h3>🌟 Priority Dashboard</h3><span class="pill">12 tasks</span></div>
+          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>📸 Get passport photos</label><span class="due">Tuesday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>🏥 Book health screening</label><span class="due">Tuesday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>💡 Lighting inputs for Energy Team</label><span class="due">Tuesday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>📊 Finalise Qiddiya tracker</label><span class="due">Tuesday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>📧 Architects markups & email</label><span class="due">Tuesday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag high">🟠 High</span><label>☎️ Catch-up call with Dalia</label><span class="due">Wednesday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag high">🟠 High</span><label>🔥 Heat & Tile innovation research</label><span class="due">Wednesday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag high">🟠 High</span><label>🌴 Understand Ghaf project scope</label><span class="due">Wednesday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag high">🟠 High</span><label>👨‍🏫 Schedule mentor meeting</label><span class="due">Thursday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag high">🟠 High</span><label>🎓 Take Harvard Test</label><span class="due">Friday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>📝 Finish 1.5 M1 Reports</label><span class="due">Friday</span><input data-group="nandana-work" type="checkbox"></div>
+          <div class="priority-row"><span class="tag personal">🟢 Personal</span><label>💍 Meet Ashni & return ornaments</label><span class="due">Saturday</span><input data-group="nandana-work" type="checkbox"></div>
+        </div>
+
+        <div class="card span-4">
+          <div class="card-title"><h3>🚀 Future Work</h3><span class="pill">Point Estate</span></div>
+          <div class="notice"><div class="icon">✅</div><p>Figured out where to start: <strong>Point Estate</strong> 😎</p></div>
+          <div class="task-list" style="margin-top:12px"><div class="task"><input data-group="nandana-extra" type="checkbox"><label>Begin execution this week</label></div></div>
+        </div>
+
+        <div class="card span-6">
+          <div class="card-title"><h3>💼 Work Planner</h3><span class="pill">By day</span></div>
+          <div class="grid">
+            <div class="day-card span-6"><h4>📅 Tuesday — Heavy Lifting</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Passport photos</label></div><div class="task"><input type="checkbox"><label>Book health screening</label></div><div class="task"><input type="checkbox"><label>Lighting inputs</label></div><div class="task"><input type="checkbox"><label>Finalise Qiddiya tracker</label></div><div class="task"><input type="checkbox"><label>Architects markups & email</label></div></div></div>
+            <div class="day-card span-6"><h4>📅 Wednesday — Build Momentum</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Call Dalia</label></div><div class="task"><input type="checkbox"><label>Heat & Tile innovation research</label></div><div class="task"><input type="checkbox"><label>Understand Ghaf scope</label></div></div></div>
+            <div class="day-card span-6"><h4>📅 Thursday — Steady Grind</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Schedule mentor meeting</label></div></div></div>
+            <div class="day-card span-6"><h4>📅 Friday / Saturday</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Harvard Test</label></div><div class="task"><input type="checkbox"><label>Finish 1.5 M1 Reports</label></div><div class="task"><input type="checkbox"><label>Meet Ashni</label></div><div class="task"><input type="checkbox"><label>Return ornaments</label></div></div></div>
+          </div>
+        </div>
+
+        <div class="card span-6">
+          <div class="card-title"><h3>💪 Habit Tracker</h3><span class="pill">Mon–Sun</span></div>
+          <table class="habit-table">
+            <thead><tr><th>Habit</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+            <tbody>
+              <tr><td>🏋️ Gym</td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td></tr>
+              <tr><td>😴 Sleep early</td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td></tr>
+              <tr><td>🚶 Walk</td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card span-4"><div class="card-title"><h3>🌱 Personal Growth</h3></div><div class="task-list"><div class="task"><input data-group="nandana-personal" type="checkbox"><label>🎓 Harvard Test</label></div><div class="task"><input data-group="nandana-personal" type="checkbox"><label>👨‍🏫 Schedule mentor meeting</label></div><div class="task"><input data-group="nandana-personal" type="checkbox"><label>🏥 Health screening booked</label></div></div></div>
+        <div class="card span-4"><div class="card-title"><h3>🎉 Weekend Reset</h3></div><div class="task-list"><div class="task"><input data-group="nandana-weekend" type="checkbox"><label>☕ Visit a café</label></div><div class="task"><input data-group="nandana-weekend" type="checkbox"><label>🧘 Pilates or Group Class</label></div><div class="task"><input data-group="nandana-weekend" type="checkbox"><label>👯 Catch up with Rishika or Ashni</label></div></div></div>
+        <div class="card span-4"><div class="card-title"><h3>🧠 Research Corner</h3></div><p class="section-note"><em>Heat & Tile Innovations — ideas to explore</em></p><div class="task-list" style="margin-top:12px"><div class="task"><input type="checkbox"><label>Sustainable materials</label></div><div class="task"><input type="checkbox"><label>Passive cooling</label></div><div class="task"><input type="checkbox"><label>Heat-resistant façades</label></div><div class="task"><input type="checkbox"><label>Smart coatings</label></div><div class="task"><input type="checkbox"><label>AI-based thermal modelling</label></div><div class="task"><input type="checkbox"><label>New construction technologies</label></div></div></div>
+      </div>
+    </section>
+
+    <section id="sreerag">
+      <div class="section-head">
+        <div>
+          <h2>⚡ Sreerag</h2>
+          <p class="section-note">Work tickets, interviews, Dubai applications, health goals, projects, and non-negotiables.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card span-8">
+          <div class="card-title"><h3>✅ To Do</h3><span class="pill">15 tasks</span></div>
+          <div class="task-list">
+            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Complete the G instance finance report</label></div>
+            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Complete the automation for collection of daily used GPUs using G*</label></div>
+            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Send out Mirador report with explanation — be careful, senior leadership may get confused</label></div>
+            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Hide from Swarna about interview</label></div>
+            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Give interview</label></div>
+            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Apply to 30 jobs in Dubai — per day</label></div>
+            <div class="task"><input data-group="sreerag-health" type="checkbox"><label>Gym on Tuesday, Thursday, Friday and Saturday morning</label></div>
+            <div class="task"><input data-group="sreerag-health" type="checkbox"><label>Increase calorie intake</label></div>
+            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>FSX movement tracker project</label></div>
+            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Olympus pretraining us-east-1 cleanup</label></div>
+            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Upscale on Sev 2 tickets — take the handover</label></div>
+            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Pipeline change task — push for start day</label></div>
+            <div class="task"><input data-group="sreerag-personal" type="checkbox"><label>Call Nandana daily <strong>(Very very important)</strong></label></div>
+            <div class="task"><input data-group="sreerag-personal" type="checkbox"><label>Life insurance premium to be paid</label></div>
+          </div>
+        </div>
+
+        <div class="card span-4">
+          <div class="card-title"><h3>🎯 Ticket Board</h3><span class="pill">focus lanes</span></div>
+          <div class="day-card" style="margin-bottom:10px"><h4>🔥 High Attention</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Mirador report clarity</label></div><div class="task"><input type="checkbox"><label>Sev 2 handover</label></div><div class="task"><input type="checkbox"><label>Olympus cleanup</label></div></div></div>
+          <div class="day-card"><h4>🚀 Growth Moves</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Interview</label></div><div class="task"><input type="checkbox"><label>30 Dubai jobs/day</label></div><div class="task"><input type="checkbox"><label>Pipeline change push</label></div></div></div>
+        </div>
+
+        <div class="card span-6">
+          <div class="card-title"><h3>🌱 Want To Do</h3><span class="pill">nice but useful</span></div>
+          <div class="task-list">
+            <div class="task"><input data-group="sreerag-want" type="checkbox"><label>Call Nandana daily <strong>(Very very important)</strong></label></div>
+            <div class="task"><input data-group="sreerag-want" type="checkbox"><label>Design and launch the mobile update for older iOS — Together</label></div>
+            <div class="task"><input data-group="sreerag-want" type="checkbox"><label>Plan the idea and control Gautham for Bangalore relaunch</label></div>
+            <div class="task"><input data-group="sreerag-want" type="checkbox"><label>Complete one book reading</label></div>
+            <div class="task"><input data-group="sreerag-want" type="checkbox"><label>Create online tracker</label></div>
+          </div>
+        </div>
+
+        <div class="card span-6">
+          <div class="card-title"><h3>💪 Health & Routine</h3><span class="pill">simple targets</span></div>
+          <table class="habit-table">
+            <thead><tr><th>Habit</th><th>Tue</th><th>Thu</th><th>Fri</th><th>Sat AM</th><th>Daily</th></tr></thead>
+            <tbody>
+              <tr><td>🏋️ Gym</td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td>—</td></tr>
+              <tr><td>🍽️ Increase calories</td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td></tr>
+              <tr><td>📞 Call Nandana</td><td><input data-group="sreerag-personal" type="checkbox"></td><td><input data-group="sreerag-personal" type="checkbox"></td><td><input data-group="sreerag-personal" type="checkbox"></td><td><input data-group="sreerag-personal" type="checkbox"></td><td><input data-group="sreerag-personal" type="checkbox"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="scoreboard">
+      <div class="card span-12">
+        <div class="card-title"><h3>📈 Weekly Scoreboard</h3><span class="pill">live progress</span></div>
+        <div class="score-grid">
+          <div class="score"><div class="top"><strong>Nandana Work</strong><span id="score-nandana-work">0 / 12</span></div><div class="bar"><div id="bar-nandana-work" class="fill"></div></div></div>
+          <div class="score"><div class="top"><strong>Nandana Health</strong><span id="score-nandana-health">0 / 21</span></div><div class="bar"><div id="bar-nandana-health" class="fill"></div></div></div>
+          <div class="score"><div class="top"><strong>Sreerag Work</strong><span id="score-sreerag-work">0 / 11</span></div><div class="bar"><div id="bar-sreerag-work" class="fill"></div></div></div>
+          <div class="score"><div class="top"><strong>Sreerag Life</strong><span id="score-sreerag-life">0 / 7</span></div><div class="bar"><div id="bar-sreerag-life" class="fill"></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rules">
+      <div class="grid">
+        <div class="notice danger span-6">
+          <div class="icon">🚫</div>
+          <p><strong>Not Allowed This Week</strong><br>❌ Don't eat Maggie.<br>❌ Never order brisket from that idiot place ever again.</p>
+        </div>
+        <div class="notice span-6">
+          <div class="icon">✦</div>
+          <p><strong>Operating Rule</strong><br>Keep it visible, tick it daily, and don't let the small pending things become a dramatic side quest.</p>
+        </div>
+      </div>
+      <div class="footer-quote">
+        <blockquote>Finish strong, then disappear into a café like a peaceful productivity villain.</blockquote>
+        <p>Clean week. Clean mind. Minimum drama. Maximum execution.</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "weekly-tracker-v2";
+
+    function allChecks() { return Array.from(document.querySelectorAll('input[type="checkbox"]')); }
+
+    function saveState() {
+      const state = allChecks().map(cb => cb.checked);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState() {
+      try {
+        const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        allChecks().forEach((cb, i) => { cb.checked = Boolean(state[i]); });
+      } catch(e) {}
+    }
+
+    function updateTaskStyles() {
+      document.querySelectorAll('.task').forEach(task => {
+        const cb = task.querySelector('input[type="checkbox"]');
+        if (cb && cb.checked) task.classList.add('done');
+        else task.classList.remove('done');
+      });
+    }
+
+    function updateScore(group, labelId, barId) {
+      const boxes = Array.from(document.querySelectorAll(`[data-group="${group}"]`));
+      const done = boxes.filter(b => b.checked).length;
+      const total = boxes.length || 1;
+      const pct = Math.round((done / total) * 100);
+      const label = document.getElementById(labelId);
+      const bar = document.getElementById(barId);
+      if (label) label.textContent = `${done} / ${total}`;
+      if (bar) bar.style.width = `${pct}%`;
+    }
+
+    function updateAll() {
+      updateTaskStyles();
+      updateScore('nandana-work', 'score-nandana-work', 'bar-nandana-work');
+      updateScore('nandana-health', 'score-nandana-health', 'bar-nandana-health');
+      updateScore('sreerag-work', 'score-sreerag-work', 'bar-sreerag-work');
+      const lifeGroups = ['sreerag-health', 'sreerag-personal', 'sreerag-want'];
+      const boxes = lifeGroups.flatMap(g => Array.from(document.querySelectorAll(`[data-group="${g}"]`)));
+      const done = boxes.filter(b => b.checked).length;
+      const total = boxes.length || 1;
+      document.getElementById('score-sreerag-life').textContent = `${done} / ${total}`;
+      document.getElementById('bar-sreerag-life').style.width = `${Math.round(done/total*100)}%`;
+      saveState();
+    }
+
+    function resetAll() {
+      if (!confirm('Reset all checkboxes?')) return;
+      allChecks().forEach(cb => cb.checked = false);
+      localStorage.removeItem(STORAGE_KEY);
+      updateAll();
+    }
+
+    loadState();
+    allChecks().forEach(cb => cb.addEventListener('change', updateAll));
+    updateAll();
+  </script>
+</body>
+</html>
