@@ -9,6 +9,7 @@ create table if not exists public.tracker_tasks (
   title text not null,
   due text not null default 'This week',
   priority text not null default 'work' check (priority in ('critical', 'high', 'personal', 'work')),
+  category text not null default 'work' check (category in ('work', 'personal', 'milestone', 'daily')),
   done boolean not null default false,
   position integer not null default 0,
   created_at timestamptz not null default now(),
@@ -16,6 +17,16 @@ create table if not exists public.tracker_tasks (
 );
 
 alter table public.tracker_tasks enable row level security;
+
+alter table public.tracker_tasks
+add column if not exists category text not null default 'work';
+
+alter table public.tracker_tasks
+drop constraint if exists tracker_tasks_category_check;
+
+alter table public.tracker_tasks
+add constraint tracker_tasks_category_check
+check (category in ('work', 'personal', 'milestone', 'daily'));
 
 drop policy if exists "weekly tracker public read" on public.tracker_tasks;
 drop policy if exists "weekly tracker public insert" on public.tracker_tasks;
@@ -65,26 +76,27 @@ before update on public.tracker_tasks
 for each row
 execute function public.set_tracker_tasks_updated_at();
 
-insert into public.tracker_tasks (id, owner, title, due, priority, done, position)
+insert into public.tracker_tasks (id, owner, title, due, priority, category, done, position)
 values
-  ('n-1', 'nandana', 'Get passport photos', 'Tuesday', 'critical', false, 1),
-  ('n-2', 'nandana', 'Book health screening', 'Tuesday', 'critical', false, 2),
-  ('n-3', 'nandana', 'Lighting inputs for Energy Team', 'Tuesday', 'work', false, 3),
-  ('n-4', 'nandana', 'Finalise Qiddiya tracker', 'Tuesday', 'critical', false, 4),
-  ('n-5', 'nandana', 'Architects markups and email', 'Tuesday', 'work', false, 5),
-  ('n-6', 'nandana', 'Catch-up call with Dalia', 'Wednesday', 'high', false, 6),
-  ('n-7', 'nandana', 'Heat and Tile innovation research', 'Wednesday', 'high', false, 7),
-  ('n-8', 'nandana', 'Understand Ghaf project scope', 'Wednesday', 'work', false, 8),
-  ('s-1', 'sreerag', 'Complete the G instance finance report', 'This week', 'work', false, 101),
-  ('s-2', 'sreerag', 'Complete automation for daily used GPU collection', 'This week', 'work', false, 102),
-  ('s-3', 'sreerag', 'Send Mirador report with explanation', 'This week', 'critical', false, 103),
-  ('s-4', 'sreerag', 'Give interview', 'This week', 'high', false, 104),
-  ('s-5', 'sreerag', 'Apply to 30 jobs in Dubai per day', 'Daily', 'high', false, 105),
-  ('s-6', 'sreerag', 'Gym on Tuesday, Thursday, Friday and Saturday morning', 'Tue/Thu/Fri/Sat', 'personal', false, 106),
-  ('s-7', 'sreerag', 'Call Nandana daily', 'Daily', 'personal', false, 107)
+  ('n-1', 'nandana', 'Get passport photos', 'Tuesday', 'critical', 'personal', false, 1),
+  ('n-2', 'nandana', 'Book health screening', 'Tuesday', 'critical', 'personal', false, 2),
+  ('n-3', 'nandana', 'Lighting inputs for Energy Team', 'Tuesday', 'work', 'work', false, 3),
+  ('n-4', 'nandana', 'Finalise Qiddiya tracker', 'Tuesday', 'critical', 'work', false, 4),
+  ('n-5', 'nandana', 'Architects markups and email', 'Tuesday', 'work', 'work', false, 5),
+  ('n-6', 'nandana', 'Catch-up call with Dalia', 'Wednesday', 'high', 'work', false, 6),
+  ('n-7', 'nandana', 'Heat and Tile innovation research', 'Wednesday', 'high', 'milestone', false, 7),
+  ('n-8', 'nandana', 'Understand Ghaf project scope', 'Wednesday', 'work', 'milestone', false, 8),
+  ('s-1', 'sreerag', 'Complete the G instance finance report', 'This week', 'work', 'work', false, 101),
+  ('s-2', 'sreerag', 'Complete automation for daily used GPU collection', 'This week', 'work', 'work', false, 102),
+  ('s-3', 'sreerag', 'Send Mirador report with explanation', 'This week', 'critical', 'work', false, 103),
+  ('s-4', 'sreerag', 'Give interview', 'This week', 'high', 'milestone', false, 104),
+  ('s-5', 'sreerag', 'Apply to 30 jobs in Dubai per day', 'Daily', 'high', 'milestone', false, 105),
+  ('s-6', 'sreerag', 'Gym on Tuesday, Thursday, Friday and Saturday morning', 'Tue/Thu/Fri/Sat', 'personal', 'daily', false, 106),
+  ('s-7', 'sreerag', 'Call Nandana daily', 'Daily', 'personal', 'daily', false, 107)
 on conflict (id) do update
 set owner = excluded.owner,
     title = excluded.title,
     due = excluded.due,
     priority = excluded.priority,
+    category = excluded.category,
     position = excluded.position;

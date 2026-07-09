@@ -227,6 +227,22 @@
       gap: 10px;
     }
 
+    .category-block {
+      display: grid;
+      gap: 10px;
+    }
+
+    .category-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 4px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
     .task {
       display: grid;
       grid-template-columns: auto 1fr auto;
@@ -448,6 +464,12 @@
             <option value="critical">Critical</option>
             <option value="personal">Personal</option>
           </select>
+          <select id="taskCategory">
+            <option value="work">Work</option>
+            <option value="personal">Personal</option>
+            <option value="milestone">Professional milestone</option>
+            <option value="daily">Daily / routine</option>
+          </select>
           <input id="taskDue" placeholder="Due day or date" />
           <button class="wide" type="submit">Add To Tracker</button>
         </form>
@@ -496,12 +518,12 @@ Sreerag
         <div class="notice">
           <strong>Best format:</strong><br>
           Nandana<br>
-          - Task title | Due | Priority<br><br>
+          - Task title | Due | Priority | Category<br><br>
           Sreerag<br>
-          - Task title | Due | Priority
+          - Task title | Due | Priority | Category
         </div>
         <div class="notice" style="margin-top:10px">
-          If you skip due or priority, it still works. Priority can be work, high, critical, or personal.
+          Category can be work, personal, milestone, or daily. If you skip it, the tracker guesses.
         </div>
       </div>
     </section>
@@ -516,22 +538,30 @@ Sreerag
     const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
     const starterTasks = [
-      { id: "n-1", owner: "nandana", title: "Get passport photos", due: "Tuesday", priority: "critical", done: false },
-      { id: "n-2", owner: "nandana", title: "Book health screening", due: "Tuesday", priority: "critical", done: false },
-      { id: "n-3", owner: "nandana", title: "Lighting inputs for Energy Team", due: "Tuesday", priority: "work", done: false },
-      { id: "n-4", owner: "nandana", title: "Finalise Qiddiya tracker", due: "Tuesday", priority: "critical", done: false },
-      { id: "n-5", owner: "nandana", title: "Architects markups and email", due: "Tuesday", priority: "work", done: false },
-      { id: "n-6", owner: "nandana", title: "Catch-up call with Dalia", due: "Wednesday", priority: "high", done: false },
-      { id: "n-7", owner: "nandana", title: "Heat and Tile innovation research", due: "Wednesday", priority: "high", done: false },
-      { id: "n-8", owner: "nandana", title: "Understand Ghaf project scope", due: "Wednesday", priority: "work", done: false },
-      { id: "s-1", owner: "sreerag", title: "Complete the G instance finance report", due: "This week", priority: "work", done: false },
-      { id: "s-2", owner: "sreerag", title: "Complete automation for daily used GPU collection", due: "This week", priority: "work", done: false },
-      { id: "s-3", owner: "sreerag", title: "Send Mirador report with explanation", due: "This week", priority: "critical", done: false },
-      { id: "s-4", owner: "sreerag", title: "Give interview", due: "This week", priority: "high", done: false },
-      { id: "s-5", owner: "sreerag", title: "Apply to 30 jobs in Dubai per day", due: "Daily", priority: "high", done: false },
-      { id: "s-6", owner: "sreerag", title: "Gym on Tuesday, Thursday, Friday and Saturday morning", due: "Tue/Thu/Fri/Sat", priority: "personal", done: false },
-      { id: "s-7", owner: "sreerag", title: "Call Nandana daily", due: "Daily", priority: "personal", done: false }
+      { id: "n-1", owner: "nandana", title: "Get passport photos", due: "Tuesday", priority: "critical", category: "personal", done: false },
+      { id: "n-2", owner: "nandana", title: "Book health screening", due: "Tuesday", priority: "critical", category: "personal", done: false },
+      { id: "n-3", owner: "nandana", title: "Lighting inputs for Energy Team", due: "Tuesday", priority: "work", category: "work", done: false },
+      { id: "n-4", owner: "nandana", title: "Finalise Qiddiya tracker", due: "Tuesday", priority: "critical", category: "work", done: false },
+      { id: "n-5", owner: "nandana", title: "Architects markups and email", due: "Tuesday", priority: "work", category: "work", done: false },
+      { id: "n-6", owner: "nandana", title: "Catch-up call with Dalia", due: "Wednesday", priority: "high", category: "work", done: false },
+      { id: "n-7", owner: "nandana", title: "Heat and Tile innovation research", due: "Wednesday", priority: "high", category: "milestone", done: false },
+      { id: "n-8", owner: "nandana", title: "Understand Ghaf project scope", due: "Wednesday", priority: "work", category: "milestone", done: false },
+      { id: "s-1", owner: "sreerag", title: "Complete the G instance finance report", due: "This week", priority: "work", category: "work", done: false },
+      { id: "s-2", owner: "sreerag", title: "Complete automation for daily used GPU collection", due: "This week", priority: "work", category: "work", done: false },
+      { id: "s-3", owner: "sreerag", title: "Send Mirador report with explanation", due: "This week", priority: "critical", category: "work", done: false },
+      { id: "s-4", owner: "sreerag", title: "Give interview", due: "This week", priority: "high", category: "milestone", done: false },
+      { id: "s-5", owner: "sreerag", title: "Apply to 30 jobs in Dubai per day", due: "Daily", priority: "high", category: "milestone", done: false },
+      { id: "s-6", owner: "sreerag", title: "Gym on Tuesday, Thursday, Friday and Saturday morning", due: "Tue/Thu/Fri/Sat", priority: "personal", category: "daily", done: false },
+      { id: "s-7", owner: "sreerag", title: "Call Nandana daily", due: "Daily", priority: "personal", category: "daily", done: false }
     ];
+
+    const categoryOrder = ["work", "personal", "milestone", "daily"];
+    const categoryLabels = {
+      work: "Work",
+      personal: "Personal",
+      milestone: "Professional milestones",
+      daily: "Daily / routine"
+    };
 
     let tasks = loadLocalTasks();
     let remoteReady = false;
@@ -623,7 +653,16 @@ Sreerag
       const list = document.getElementById(owner + "TaskList");
       document.getElementById(owner + "Count").textContent = personTasks.length + " task" + (personTasks.length === 1 ? "" : "s");
 
-      list.innerHTML = personTasks.length ? personTasks.map(task => `
+      list.innerHTML = personTasks.length ? categoryOrder.map(category => {
+        const groupedTasks = personTasks.filter(task => normalizeCategory(task.category) === category);
+        if (!groupedTasks.length) return "";
+        return `
+          <div class="category-block">
+            <div class="category-title">
+              <span>${categoryLabels[category]}</span>
+              <span class="pill">${groupedTasks.length} task${groupedTasks.length === 1 ? "" : "s"}</span>
+            </div>
+            ${groupedTasks.map(task => `
         <article class="task ${task.done ? "done" : ""}">
           <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask('${task.id}')" aria-label="Mark task done">
           <div>
@@ -633,13 +672,17 @@ Sreerag
             </div>
             <div class="task-meta">
               <span>${capitalize(task.owner)}</span>
+              <span>${categoryLabels[normalizeCategory(task.category)]}</span>
               <span>${escapeHtml(task.due || "Unscheduled")}</span>
               <span>${task.done ? "Done" : "Open"}</span>
             </div>
           </div>
           <button class="delete-btn" type="button" onclick="deleteTask('${task.id}')">Remove</button>
         </article>
-      `).join("") : `<div class="empty">No ${capitalize(owner)} tasks match this view.</div>`;
+            `).join("")}
+          </div>
+        `;
+      }).join("") : `<div class="empty">No ${capitalize(owner)} tasks match this view.</div>`;
     }
 
     async function addTask(event) {
@@ -651,6 +694,7 @@ Sreerag
         owner: document.getElementById("taskOwner").value,
         title,
         priority: normalizePriority(document.getElementById("taskPriority").value),
+        category: normalizeCategory(document.getElementById("taskCategory").value),
         due: document.getElementById("taskDue").value.trim() || "This week",
         done: false
       });
@@ -688,13 +732,14 @@ Sreerag
         const title = parts[0] || clean;
         const due = parts[1] || "This week";
         const priority = normalizePriority(parts[2] || guessPriority(title));
-        return [{ id: makeId(), owner, title, due, priority, done: false }];
+        const category = normalizeCategory(parts[3] || guessCategory(title, priority));
+        return [{ id: makeId(), owner, title, due, priority, category, done: false }];
       });
     }
 
     function loadCurrentIntoPasteBox() {
       const grouped = ["nandana", "sreerag"].map(owner => {
-        const lines = tasks.filter(task => task.owner === owner).map(task => `- ${task.title} | ${task.due} | ${task.priority}`);
+        const lines = tasks.filter(task => task.owner === owner).map(task => `- ${task.title} | ${task.due} | ${task.priority} | ${normalizeCategory(task.category)}`);
         return capitalize(owner) + "\n" + lines.join("\n");
       });
       document.getElementById("bulkTasks").value = grouped.join("\n\n");
@@ -757,6 +802,7 @@ Sreerag
         title: task.title,
         due: task.due || "This week",
         priority: normalizePriority(task.priority),
+        category: normalizeCategory(task.category),
         done: Boolean(task.done),
         position: Number.isFinite(task.position) ? task.position : index
       };
@@ -769,6 +815,7 @@ Sreerag
         title: row.title,
         due: row.due,
         priority: row.priority,
+        category: normalizeCategory(row.category),
         done: Boolean(row.done),
         position: row.position
       };
@@ -793,11 +840,26 @@ Sreerag
       return ["critical", "high", "personal", "work"].includes(priority) ? priority : "work";
     }
 
+    function normalizeCategory(value) {
+      const category = String(value || "work").toLowerCase().replace(/\s+/g, "-");
+      if (["professional", "professional-milestone", "professional-milestones", "career"].includes(category)) return "milestone";
+      if (["routine", "daily-routine", "habit", "habits"].includes(category)) return "daily";
+      return ["work", "personal", "milestone", "daily"].includes(category) ? category : "work";
+    }
+
     function guessPriority(title) {
       const text = title.toLowerCase();
       if (text.includes("urgent") || text.includes("critical") || text.includes("sev")) return "critical";
       if (text.includes("gym") || text.includes("call") || text.includes("health")) return "personal";
       if (text.includes("high")) return "high";
+      return "work";
+    }
+
+    function guessCategory(title, priority) {
+      const text = title.toLowerCase();
+      if (priority === "personal" || text.includes("gym") || text.includes("health") || text.includes("call")) return "daily";
+      if (text.includes("interview") || text.includes("jobs") || text.includes("research") || text.includes("scope")) return "milestone";
+      if (text.includes("passport") || text.includes("appointment") || text.includes("premium")) return "personal";
       return "work";
     }
 
