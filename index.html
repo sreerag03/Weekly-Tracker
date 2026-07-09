@@ -6,141 +6,166 @@
   <title>Weekly Tracker</title>
   <style>
     :root {
-      --bg: #f6f7f9;
-      --panel: #ffffff;
-      --panel-2: #fbfcfe;
-      --text: #1d2430;
-      --muted: #657184;
-      --line: #e3e7ee;
-      --ink: #101828;
-      --accent: #315fcb;
-      --accent-soft: #edf3ff;
-      --green: #137a45;
-      --green-soft: #e9f7ef;
-      --amber: #9a5b00;
-      --amber-soft: #fff3d6;
-      --red: #b42318;
-      --red-soft: #fff0ee;
-      --shadow: 0 18px 45px rgba(16, 24, 40, 0.08);
-      --radius: 8px;
+      --bg: #ffffff;
+      --paper: #ffffff;
+      --soft: #f7f7f5;
+      --soft-2: #fbfaf8;
+      --text: #1f2328;
+      --muted: #707782;
+      --line: #e8e5df;
+      --ink: #111827;
+      --accent: #6f5cff;
+      --accent-soft: #f0eeff;
+      --green: #108548;
+      --green-soft: #eaf7ef;
+      --amber: #b76e00;
+      --amber-soft: #fff5df;
+      --red: #c83532;
+      --red-soft: #fff0ef;
+      --blue: #1f6feb;
+      --blue-soft: #eef5ff;
+      --shadow: 0 22px 70px rgba(31, 35, 40, 0.08);
+      --shadow-soft: 0 10px 30px rgba(31, 35, 40, 0.06);
+      --radius: 24px;
     }
 
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
-      background: var(--bg);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(111, 92, 255, 0.08), transparent 30%),
+        radial-gradient(circle at 86% 6%, rgba(255, 210, 122, 0.18), transparent 28%),
+        var(--bg);
     }
 
     .wrap {
-      width: min(1180px, calc(100% - 28px));
+      width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 28px 0 46px;
+      padding: 34px 0 54px;
     }
 
     header {
       display: grid;
-      grid-template-columns: 1fr 310px;
-      gap: 16px;
-      align-items: stretch;
-      margin-bottom: 16px;
+      grid-template-columns: 1.45fr .55fr;
+      gap: 18px;
+      margin-bottom: 18px;
     }
 
-    .hero, .panel, .notice {
-      background: var(--panel);
+    .hero, .card, .notice {
+      background: rgba(255, 255, 255, .88);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-soft);
     }
 
-    .hero { padding: 28px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 34px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      right: -90px;
+      top: -92px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(111, 92, 255, .12), rgba(255, 202, 87, .16));
+    }
 
     .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--soft-2);
+      border: 1px solid var(--line);
       color: var(--muted);
       font-size: 13px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .05em;
+      font-weight: 750;
     }
 
     h1 {
-      margin: 12px 0 10px;
+      margin: 18px 0 10px;
       color: var(--ink);
-      font-size: clamp(38px, 6vw, 72px);
-      line-height: .94;
+      font-size: clamp(42px, 7vw, 82px);
+      line-height: .9;
       letter-spacing: 0;
     }
 
-    h2, h3, p { margin-top: 0; }
-    h2 { margin-bottom: 8px; font-size: clamp(24px, 3vw, 36px); letter-spacing: 0; }
-    h3 { margin-bottom: 0; font-size: 18px; }
+    h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(26px, 3.6vw, 42px);
+      letter-spacing: 0;
+    }
+
+    h3 { margin: 0; color: var(--ink); font-size: 19px; letter-spacing: 0; }
+    h4 { margin: 0 0 10px; font-size: 15px; letter-spacing: 0; }
 
     .subtitle {
-      max-width: 760px;
-      margin-bottom: 0;
+      margin: 0;
+      max-width: 690px;
       color: var(--muted);
-      font-size: 16px;
+      font-size: 17px;
       line-height: 1.55;
     }
 
-    .status-panel {
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
       padding: 22px;
       color: white;
       background: var(--ink);
       border-radius: var(--radius);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 18px;
       box-shadow: var(--shadow);
     }
 
-    .status-panel small {
-      display: block;
-      margin-bottom: 8px;
-      color: rgba(255, 255, 255, .65);
-      font-weight: 800;
-      letter-spacing: .06em;
+    .side-panel small {
+      color: rgba(255, 255, 255, .64);
+      font-weight: 700;
+      letter-spacing: .08em;
       text-transform: uppercase;
     }
 
-    .status-panel strong {
+    .side-panel strong {
       display: block;
-      font-size: 34px;
+      margin-top: 8px;
+      font-size: 32px;
       line-height: 1;
+      letter-spacing: 0;
     }
 
-    .status-panel p {
+    .side-panel p, .sync-status {
       margin: 0;
       color: rgba(255, 255, 255, .72);
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
-    .sync-status {
-      min-height: 18px;
-      color: rgba(255, 255, 255, .72);
-      font-size: 12px;
-      font-weight: 750;
-    }
+    .sync-status { font-size: 12px; font-weight: 750; }
 
-    input, select, textarea, button {
-      font: inherit;
-    }
-
+    input, select, textarea, button { font: inherit; }
     input, select, textarea {
       width: 100%;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 16px;
       padding: 11px 12px;
       color: var(--text);
       background: white;
     }
 
     textarea {
-      min-height: 150px;
+      min-height: 160px;
       resize: vertical;
       line-height: 1.45;
     }
@@ -148,38 +173,65 @@
     button {
       min-height: 42px;
       border: 0;
-      border-radius: var(--radius);
-      padding: 10px 14px;
+      border-radius: 999px;
+      padding: 10px 15px;
       cursor: pointer;
       color: white;
       background: var(--ink);
       font-weight: 850;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: transform .16s ease;
+      box-shadow: 0 10px 20px rgba(17, 24, 39, .10);
+      transition: .18s ease;
+    }
+
+    button.secondary {
+      color: var(--ink);
+      background: var(--soft);
+      border: 1px solid var(--line);
+      box-shadow: none;
     }
 
     button:hover { transform: translateY(-1px); }
-    button.secondary {
-      color: var(--ink);
-      background: white;
-      border: 1px solid var(--line);
-    }
 
     .actions {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 20px;
+      margin-top: 22px;
     }
 
-    .toolbar {
-      display: grid;
-      grid-template-columns: minmax(220px, 1fr) 170px 170px;
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
-      margin: 16px 0;
+      margin: 18px 0;
+    }
+
+    .tab {
+      padding: 10px 14px;
+      color: var(--text);
+      text-decoration: none;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-weight: 800;
+      box-shadow: var(--shadow-soft);
+    }
+
+    section { margin-top: 22px; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .section-note {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
     }
 
     .grid {
@@ -193,13 +245,13 @@
     .span-6 { grid-column: span 6; }
     .span-4 { grid-column: span 4; }
 
-    .panel { padding: 20px; }
+    .card { padding: 22px; }
 
-    .panel-head {
+    .card-title {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: start;
-      gap: 14px;
+      gap: 12px;
       margin-bottom: 14px;
     }
 
@@ -207,59 +259,68 @@
       display: inline-flex;
       align-items: center;
       min-height: 26px;
-      padding: 5px 9px;
+      padding: 6px 9px;
       border-radius: 999px;
       color: var(--muted);
-      background: #f2f4f7;
+      background: var(--soft);
       border: 1px solid var(--line);
       font-size: 12px;
       font-weight: 850;
       white-space: nowrap;
     }
 
-    .person-stack {
+    .toolbar {
       display: grid;
-      gap: 16px;
+      grid-template-columns: minmax(220px, 1fr) 170px 170px;
+      gap: 10px;
+      margin-top: 14px;
     }
 
-    .task-list {
+    .form-grid {
       display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
 
-    .category-block {
-      display: grid;
-      gap: 10px;
-    }
+    .wide { grid-column: span 2; }
 
-    .category-title {
-      display: flex;
+    .task-list, .lane-list { display: grid; gap: 10px; }
+
+    .priority-row {
+      display: grid;
+      grid-template-columns: 116px 1fr 104px 26px 76px;
+      gap: 10px;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding-top: 4px;
-      color: var(--ink);
-      font-size: 14px;
-      font-weight: 900;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
     }
+
+    .priority-row:last-child { border-bottom: 0; }
+    .priority-row.done label { color: var(--muted); text-decoration: line-through; }
+    .priority-row .due { color: var(--muted); font-size: 13px; font-weight: 750; }
+    .priority-row input, .task input { accent-color: var(--accent); }
 
     .task {
       display: grid;
       grid-template-columns: auto 1fr auto;
-      gap: 12px;
+      gap: 10px;
       align-items: start;
       padding: 12px;
-      background: var(--panel-2);
       border: 1px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 16px;
+      background: var(--soft-2);
+      transition: .18s ease;
     }
 
-    .task input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      margin: 1px 0 0;
-      accent-color: var(--green);
-      cursor: pointer;
+    .task:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .task input {
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
     }
 
     .task-title {
@@ -281,11 +342,8 @@
       font-weight: 750;
     }
 
-    .task.done {
-      opacity: .62;
-    }
-
     .task.done .task-title {
+      color: var(--muted);
       text-decoration: line-through;
     }
 
@@ -293,93 +351,152 @@
       display: inline-flex;
       align-items: center;
       padding: 4px 8px;
+      border: 1px solid transparent;
       border-radius: 999px;
       font-size: 11px;
-      font-weight: 900;
-      border: 1px solid transparent;
+      font-weight: 850;
+      white-space: nowrap;
       text-transform: capitalize;
     }
 
-    .critical { color: var(--red); background: var(--red-soft); border-color: #ffd3ce; }
-    .high { color: var(--amber); background: var(--amber-soft); border-color: #ffe0a3; }
-    .personal { color: var(--green); background: var(--green-soft); border-color: #bde8cb; }
-    .work { color: var(--accent); background: var(--accent-soft); border-color: #ccd8ff; }
+    .critical { color: var(--red); background: var(--red-soft); border-color: #ffd2cf; }
+    .high { color: var(--amber); background: var(--amber-soft); border-color: #ffe4ad; }
+    .personal { color: var(--green); background: var(--green-soft); border-color: #ccebd7; }
+    .work { color: var(--blue); background: var(--blue-soft); border-color: #cfe2ff; }
 
     .delete-btn {
       min-height: 30px;
       padding: 4px 9px;
       color: var(--red);
       background: white;
-      border: 1px solid #ffd3ce;
-      font-size: 12px;
+      border: 1px solid #ffd2cf;
+      border-radius: 999px;
       box-shadow: none;
+      font-size: 12px;
     }
+
+    .day-card {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--soft-2);
+    }
+
+    .habit-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .habit-table th, .habit-table td {
+      padding: 12px 10px;
+      text-align: center;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .habit-table th {
+      color: var(--muted);
+      background: var(--soft);
+      font-size: 12px;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .habit-table td:first-child, .habit-table th:first-child {
+      text-align: left;
+      font-weight: 850;
+    }
+
+    .habit-table tr:last-child td { border-bottom: 0; }
+    .habit-table td:last-child, .habit-table th:last-child { border-right: 0; }
+    .habit-table input { width: 18px; height: 18px; accent-color: var(--accent); }
 
     .score-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 14px;
     }
 
     .score {
-      padding: 15px;
-      background: var(--panel-2);
+      padding: 16px;
       border: 1px solid var(--line);
-      border-radius: var(--radius);
+      border-radius: 20px;
+      background: var(--soft-2);
     }
 
-    .score-top {
+    .score .top {
       display: flex;
       justify-content: space-between;
       gap: 10px;
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-weight: 850;
+      margin-bottom: 12px;
     }
 
-    .score-top span { color: var(--muted); }
-    .bar { height: 9px; overflow: hidden; border-radius: 999px; background: #e8ebf0; }
-    .fill { height: 100%; width: 0%; border-radius: inherit; background: var(--ink); transition: width .2s ease; }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .form-grid .wide { grid-column: span 2; }
+    .score strong { font-size: 15px; }
+    .score span { color: var(--muted); font-size: 13px; font-weight: 800; }
+    .bar { height: 10px; overflow: hidden; border-radius: 999px; background: #ecebea; }
+    .fill { width: 0%; height: 100%; border-radius: inherit; background: var(--ink); transition: width .2s ease; }
 
     .notice {
-      padding: 15px;
-      color: var(--muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 18px;
+      background: var(--soft-2);
       line-height: 1.5;
-      box-shadow: none;
-      background: #fff;
     }
 
-    .notice strong { color: var(--ink); }
+    .notice p { margin: 0; }
+    .danger { background: #fff7f6; border-color: #ffd8d5; }
+
+    .footer-quote {
+      margin-top: 22px;
+      padding: 24px;
+      color: white;
+      background: var(--ink);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .footer-quote blockquote {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 36px);
+      font-weight: 850;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .footer-quote p {
+      margin: 10px 0 0;
+      color: rgba(255, 255, 255, .72);
+    }
 
     .empty {
-      padding: 16px;
+      padding: 14px;
       color: var(--muted);
       border: 1px dashed var(--line);
-      border-radius: var(--radius);
+      border-radius: 16px;
       background: white;
     }
 
     @media (max-width: 900px) {
       header, .toolbar { grid-template-columns: 1fr; }
       .span-8, .span-6, .span-4 { grid-column: span 12; }
-      .score-grid { grid-template-columns: repeat(2, 1fr); }
+      .score-grid { grid-template-columns: 1fr 1fr; }
+      .priority-row { grid-template-columns: 1fr; gap: 6px; }
     }
 
     @media (max-width: 560px) {
-      .wrap { width: min(100% - 20px, 1180px); padding-top: 18px; }
-      .hero, .panel, .status-panel { padding: 16px; }
+      .wrap { width: min(100% - 22px, 1180px); padding-top: 18px; }
+      .hero, .card, .side-panel { padding: 18px; }
       .score-grid, .form-grid { grid-template-columns: 1fr; }
-      .form-grid .wide { grid-column: span 1; }
+      .wide { grid-column: span 1; }
       .task { grid-template-columns: auto 1fr; }
       .delete-btn { grid-column: 2; justify-self: start; }
+      .habit-table th, .habit-table td { padding: 10px 6px; font-size: 12px; }
     }
   </style>
 </head>
@@ -389,142 +506,183 @@
       <div class="hero">
         <span class="eyebrow" id="weekLabel">Weekly Tracker</span>
         <h1>Weekly Tracker</h1>
-        <p class="subtitle">A simple weekly tracker for Nandana and Sreerag. Paste next week in one shot, add one task to this week, tick things off, and keep the view clean.</p>
+        <p class="subtitle">A clean command centre for Nandana and Sreerag with tasks, tickets, habits, project moves, and weekly updates in one shared page.</p>
         <div class="actions">
           <button type="button" onclick="window.print()">Print / Save PDF</button>
+          <button class="secondary" type="button" onclick="loadTasks()">Refresh DB</button>
           <button class="secondary" type="button" onclick="resetChecks()">Reset checks</button>
-          <button class="secondary" type="button" onclick="restoreDefaults()">Restore starter list</button>
         </div>
       </div>
-      <aside class="status-panel">
+      <aside class="side-panel">
         <div>
           <small>Shared Sync</small>
           <strong>Supabase</strong>
         </div>
-        <p>Everyone opening this page sees and edits the same tracker after the Supabase table is set up.</p>
+        <p>Everyone opening the GitHub Pages link sees the same tracker and updates the same task table.</p>
         <div class="sync-status" id="syncStatus">Connecting...</div>
       </aside>
     </header>
 
-    <div class="toolbar">
-      <input id="searchInput" type="search" placeholder="Search tasks, people, priority, or due date" />
-      <select id="personFilter" aria-label="Filter by owner">
-        <option value="all">Everyone</option>
-        <option value="nandana">Nandana</option>
-        <option value="sreerag">Sreerag</option>
-      </select>
-      <select id="stateFilter" aria-label="Filter by state">
-        <option value="all">All states</option>
-        <option value="open">Open</option>
-        <option value="done">Done</option>
-      </select>
-    </div>
+    <nav class="tabs">
+      <a class="tab" href="#manage">Add / Paste</a>
+      <a class="tab" href="#nandana">Nandana</a>
+      <a class="tab" href="#sreerag">Sreerag</a>
+      <a class="tab" href="#scoreboard">Scoreboard</a>
+      <a class="tab" href="#rules">Rules</a>
+    </nav>
 
-    <section class="grid">
-      <div class="panel span-8">
-        <div class="panel-head">
-          <div>
-            <h2>This Week</h2>
-            <p class="subtitle">Separate views, one tracker. Checkmarks save immediately in this browser.</p>
-          </div>
-          <span class="pill" id="taskCount">0 tasks</span>
+    <section id="manage">
+      <div class="section-head">
+        <div>
+          <h2>Add / Paste</h2>
+          <p class="section-note">Use this page for updates. No GitHub issue page and no Supabase dashboard needed for normal task changes.</p>
         </div>
-        <div class="person-stack">
-          <section>
-            <div class="panel-head">
-              <h3>Nandana</h3>
-              <span class="pill" id="nandanaCount">0 tasks</span>
-            </div>
-            <div class="task-list" id="nandanaTaskList"></div>
-          </section>
-          <section>
-            <div class="panel-head">
-              <h3>Sreerag</h3>
-              <span class="pill" id="sreeragCount">0 tasks</span>
-            </div>
-            <div class="task-list" id="sreeragTaskList"></div>
-          </section>
-        </div>
+        <span class="pill" id="taskCount">0 tasks</span>
       </div>
-
-      <div class="panel span-4">
-        <div class="panel-head">
-          <h3>Add One Item</h3>
-          <span class="pill">this week</span>
+      <div class="grid">
+        <div class="card span-4">
+          <div class="card-title"><h3>Add One Item</h3><span class="pill">this week</span></div>
+          <form id="taskForm" class="form-grid">
+            <input class="wide" id="taskTitle" required placeholder="Task title" />
+            <select id="taskOwner">
+              <option value="sreerag">Sreerag</option>
+              <option value="nandana">Nandana</option>
+            </select>
+            <select id="taskPriority">
+              <option value="work">Work</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+              <option value="personal">Personal</option>
+            </select>
+            <select id="taskCategory">
+              <option value="work">Work</option>
+              <option value="personal">Personal</option>
+              <option value="milestone">Professional milestone</option>
+              <option value="daily">Daily / routine</option>
+            </select>
+            <input id="taskDue" placeholder="Due day or date" />
+            <button class="wide" type="submit">Add To Tracker</button>
+          </form>
         </div>
-        <form id="taskForm" class="form-grid">
-          <input class="wide" id="taskTitle" required placeholder="Task title" />
-          <select id="taskOwner">
-            <option value="sreerag">Sreerag</option>
-            <option value="nandana">Nandana</option>
-          </select>
-          <select id="taskPriority">
-            <option value="work">Work</option>
-            <option value="high">High</option>
-            <option value="critical">Critical</option>
-            <option value="personal">Personal</option>
-          </select>
-          <select id="taskCategory">
-            <option value="work">Work</option>
-            <option value="personal">Personal</option>
-            <option value="milestone">Professional milestone</option>
-            <option value="daily">Daily / routine</option>
-          </select>
-          <input id="taskDue" placeholder="Due day or date" />
-          <button class="wide" type="submit">Add To Tracker</button>
-        </form>
-      </div>
-
-      <div class="panel span-12">
-        <div class="panel-head">
-          <h3>Weekly Scoreboard</h3>
-          <span class="pill" id="updatedAt">Not synced yet</span>
-        </div>
-        <div class="score-grid">
-          <div class="score"><div class="score-top"><strong>Nandana</strong><span id="scoreNandana">0 / 0</span></div><div class="bar"><div class="fill" id="barNandana"></div></div></div>
-          <div class="score"><div class="score-top"><strong>Sreerag</strong><span id="scoreSreerag">0 / 0</span></div><div class="bar"><div class="fill" id="barSreerag"></div></div></div>
-          <div class="score"><div class="score-top"><strong>Work</strong><span id="scoreWork">0 / 0</span></div><div class="bar"><div class="fill" id="barWork"></div></div></div>
-          <div class="score"><div class="score-top"><strong>Personal</strong><span id="scorePersonal">0 / 0</span></div><div class="bar"><div class="fill" id="barPersonal"></div></div></div>
-        </div>
-      </div>
-
-      <div class="panel span-8">
-        <div class="panel-head">
-          <div>
-            <h3>Paste Next Week</h3>
-            <p class="subtitle">Paste both lists in one place. Headings like "Nandana" and "Sreerag" are detected automatically.</p>
-          </div>
-          <span class="pill">bulk update</span>
-        </div>
-        <textarea id="bulkTasks" placeholder="Example:
-Nandana
-- Finish report | Friday | high
-- Book appointment | Tuesday | personal
+        <div class="card span-8">
+          <div class="card-title"><h3>Paste Next Week</h3><span class="pill">bulk update</span></div>
+          <textarea id="bulkTasks" placeholder="Nandana
+- Finish report | Friday | high | work
+- Book health screening | Tuesday | personal | personal
 
 Sreerag
-- Complete ticket handover | Monday | work
-- Gym four days | Daily | personal"></textarea>
-        <div class="actions">
-          <button type="button" onclick="applyNextWeek()">Use As Next Week</button>
-          <button class="secondary" type="button" onclick="loadCurrentIntoPasteBox()">Load current list</button>
+- Complete ticket handover | Monday | work | work
+- Gym four days | Daily | personal | daily"></textarea>
+          <div class="actions">
+            <button type="button" onclick="applyNextWeek()">Use As Next Week</button>
+            <button class="secondary" type="button" onclick="loadCurrentIntoPasteBox()">Load current list</button>
+            <button class="secondary" type="button" onclick="restoreDefaults()">Restore starter list</button>
+          </div>
+        </div>
+        <div class="card span-12">
+          <div class="toolbar">
+            <input id="searchInput" type="search" placeholder="Search tasks, people, priority, category, or due date" />
+            <select id="personFilter" aria-label="Filter by owner">
+              <option value="all">Everyone</option>
+              <option value="nandana">Nandana</option>
+              <option value="sreerag">Sreerag</option>
+            </select>
+            <select id="stateFilter" aria-label="Filter by state">
+              <option value="all">All states</option>
+              <option value="open">Open</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="panel span-4">
-        <div class="panel-head">
-          <h3>Paste Format</h3>
-          <span class="pill">simple</span>
+    <section id="nandana">
+      <div class="section-head">
+        <div>
+          <h2>Nandana</h2>
+          <p class="section-note">Priority work, personal actions, professional milestones, daily routines, and research.</p>
         </div>
-        <div class="notice">
-          <strong>Best format:</strong><br>
-          Nandana<br>
-          - Task title | Due | Priority | Category<br><br>
-          Sreerag<br>
-          - Task title | Due | Priority | Category
+        <span class="pill" id="nandanaCount">0 tasks</span>
+      </div>
+      <div class="grid">
+        <div class="card span-8">
+          <div class="card-title"><h3>Priority Dashboard</h3><span class="pill" id="nandanaPriorityCount">0 tasks</span></div>
+          <div id="nandanaPriorityList"></div>
         </div>
-        <div class="notice" style="margin-top:10px">
-          Category can be work, personal, milestone, or daily. If you skip it, the tracker guesses.
+        <div class="card span-4">
+          <div class="card-title"><h3>Future Work</h3><span class="pill">Point Estate</span></div>
+          <div class="lane-list" id="nandanaFutureList"></div>
         </div>
+        <div class="card span-6">
+          <div class="card-title"><h3>Work Planner</h3><span class="pill">by due</span></div>
+          <div class="grid" id="nandanaDayPlanList"></div>
+        </div>
+        <div class="card span-6">
+          <div class="card-title"><h3>Habit Tracker</h3><span class="pill">daily</span></div>
+          <table class="habit-table">
+            <thead><tr><th>Habit</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+            <tbody>
+              <tr><td>Gym</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
+              <tr><td>Sleep early</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
+              <tr><td>Walk</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card span-4"><div class="card-title"><h3>Personal Growth</h3></div><div class="lane-list" id="nandanaPersonalList"></div></div>
+        <div class="card span-4"><div class="card-title"><h3>Weekend Reset</h3></div><div class="lane-list" id="nandanaDailyList"></div></div>
+        <div class="card span-4"><div class="card-title"><h3>Research Corner</h3></div><div class="lane-list" id="nandanaMilestoneList"></div></div>
+      </div>
+    </section>
+
+    <section id="sreerag">
+      <div class="section-head">
+        <div>
+          <h2>Sreerag</h2>
+          <p class="section-note">Work tickets, interviews, Dubai applications, health goals, projects, and non-negotiables.</p>
+        </div>
+        <span class="pill" id="sreeragCount">0 tasks</span>
+      </div>
+      <div class="grid">
+        <div class="card span-8">
+          <div class="card-title"><h3>To Do</h3><span class="pill" id="sreeragTodoCount">0 tasks</span></div>
+          <div class="task-list" id="sreeragTodoList"></div>
+        </div>
+        <div class="card span-4">
+          <div class="card-title"><h3>Ticket Board</h3><span class="pill">focus lanes</span></div>
+          <div class="lane-list" id="sreeragTicketList"></div>
+        </div>
+        <div class="card span-6">
+          <div class="card-title"><h3>Want To Do</h3><span class="pill">nice but useful</span></div>
+          <div class="task-list" id="sreeragWantList"></div>
+        </div>
+        <div class="card span-6">
+          <div class="card-title"><h3>Health & Routine</h3><span class="pill">simple targets</span></div>
+          <div class="task-list" id="sreeragRoutineList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="scoreboard">
+      <div class="card">
+        <div class="card-title"><h3>Weekly Scoreboard</h3><span class="pill" id="updatedAt">Not synced yet</span></div>
+        <div class="score-grid">
+          <div class="score"><div class="top"><strong>Nandana Work</strong><span id="scoreNandanaWork">0 / 0</span></div><div class="bar"><div id="barNandanaWork" class="fill"></div></div></div>
+          <div class="score"><div class="top"><strong>Nandana Life</strong><span id="scoreNandanaLife">0 / 0</span></div><div class="bar"><div id="barNandanaLife" class="fill"></div></div></div>
+          <div class="score"><div class="top"><strong>Sreerag Work</strong><span id="scoreSreeragWork">0 / 0</span></div><div class="bar"><div id="barSreeragWork" class="fill"></div></div></div>
+          <div class="score"><div class="top"><strong>Sreerag Life</strong><span id="scoreSreeragLife">0 / 0</span></div><div class="bar"><div id="barSreeragLife" class="fill"></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rules">
+      <div class="grid">
+        <div class="notice danger span-6"><p><strong>Not Allowed This Week</strong><br>Do not let small pending things stack up. Keep the tracker clean and visible.</p></div>
+        <div class="notice span-6"><p><strong>Operating Rule</strong><br>Add tasks here, tick them here, and paste the next week here. The database reflects the page.</p></div>
+      </div>
+      <div class="footer-quote">
+        <blockquote>Clean week. Clean mind. Minimum drama. Maximum execution.</blockquote>
+        <p>Keep the important things visible and move one clear item at a time.</p>
       </div>
     </section>
   </div>
@@ -532,7 +690,7 @@ Sreerag
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    const STORAGE_KEY = "weekly-tracker-abstract-v1";
+    const STORAGE_KEY = "weekly-tracker-abstract-v2";
     const SUPABASE_URL = "https://gfcwywpkmpgbixmpfrqd.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_NbD6KzIMrDXzzeSn0oNm-A_tyYTYzxN";
     const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -546,16 +704,36 @@ Sreerag
       { id: "n-6", owner: "nandana", title: "Catch-up call with Dalia", due: "Wednesday", priority: "high", category: "work", done: false },
       { id: "n-7", owner: "nandana", title: "Heat and Tile innovation research", due: "Wednesday", priority: "high", category: "milestone", done: false },
       { id: "n-8", owner: "nandana", title: "Understand Ghaf project scope", due: "Wednesday", priority: "work", category: "milestone", done: false },
+      { id: "n-9", owner: "nandana", title: "Schedule mentor meeting", due: "Thursday", priority: "high", category: "milestone", done: false },
+      { id: "n-10", owner: "nandana", title: "Take Harvard Test", due: "Friday", priority: "high", category: "milestone", done: false },
+      { id: "n-11", owner: "nandana", title: "Finish 1.5 M1 Reports", due: "Friday", priority: "critical", category: "work", done: false },
+      { id: "n-12", owner: "nandana", title: "Meet Ashni and return ornaments", due: "Saturday", priority: "personal", category: "personal", done: false },
+      { id: "n-13", owner: "nandana", title: "Begin Point Estate execution", due: "This week", priority: "work", category: "milestone", done: false },
+      { id: "n-14", owner: "nandana", title: "Visit a cafe", due: "Weekend", priority: "personal", category: "personal", done: false },
+      { id: "n-15", owner: "nandana", title: "Pilates or group class", due: "Weekend", priority: "personal", category: "daily", done: false },
+      { id: "n-16", owner: "nandana", title: "Research sustainable materials", due: "This week", priority: "high", category: "milestone", done: false },
+      { id: "n-17", owner: "nandana", title: "Research passive cooling", due: "This week", priority: "high", category: "milestone", done: false },
+      { id: "n-18", owner: "nandana", title: "Research heat-resistant facades and smart coatings", due: "This week", priority: "high", category: "milestone", done: false },
       { id: "s-1", owner: "sreerag", title: "Complete the G instance finance report", due: "This week", priority: "work", category: "work", done: false },
       { id: "s-2", owner: "sreerag", title: "Complete automation for daily used GPU collection", due: "This week", priority: "work", category: "work", done: false },
       { id: "s-3", owner: "sreerag", title: "Send Mirador report with explanation", due: "This week", priority: "critical", category: "work", done: false },
-      { id: "s-4", owner: "sreerag", title: "Give interview", due: "This week", priority: "high", category: "milestone", done: false },
-      { id: "s-5", owner: "sreerag", title: "Apply to 30 jobs in Dubai per day", due: "Daily", priority: "high", category: "milestone", done: false },
-      { id: "s-6", owner: "sreerag", title: "Gym on Tuesday, Thursday, Friday and Saturday morning", due: "Tue/Thu/Fri/Sat", priority: "personal", category: "daily", done: false },
-      { id: "s-7", owner: "sreerag", title: "Call Nandana daily", due: "Daily", priority: "personal", category: "daily", done: false }
+      { id: "s-4", owner: "sreerag", title: "Hide from Swarna about interview", due: "This week", priority: "high", category: "personal", done: false },
+      { id: "s-5", owner: "sreerag", title: "Give interview", due: "This week", priority: "high", category: "milestone", done: false },
+      { id: "s-6", owner: "sreerag", title: "Apply to 30 jobs in Dubai per day", due: "Daily", priority: "high", category: "milestone", done: false },
+      { id: "s-7", owner: "sreerag", title: "Gym on Tuesday, Thursday, Friday and Saturday morning", due: "Tue/Thu/Fri/Sat", priority: "personal", category: "daily", done: false },
+      { id: "s-8", owner: "sreerag", title: "Increase calorie intake", due: "Daily", priority: "personal", category: "daily", done: false },
+      { id: "s-9", owner: "sreerag", title: "FSX movement tracker project", due: "This week", priority: "work", category: "work", done: false },
+      { id: "s-10", owner: "sreerag", title: "Olympus pretraining us-east-1 cleanup", due: "This week", priority: "critical", category: "work", done: false },
+      { id: "s-11", owner: "sreerag", title: "Upscale on Sev 2 tickets and take the handover", due: "This week", priority: "critical", category: "work", done: false },
+      { id: "s-12", owner: "sreerag", title: "Pipeline change task and push for start day", due: "This week", priority: "high", category: "work", done: false },
+      { id: "s-13", owner: "sreerag", title: "Call Nandana daily", due: "Daily", priority: "personal", category: "daily", done: false },
+      { id: "s-14", owner: "sreerag", title: "Life insurance premium to be paid", due: "This week", priority: "personal", category: "personal", done: false },
+      { id: "s-15", owner: "sreerag", title: "Design and launch the mobile update for older iOS Together", due: "This week", priority: "high", category: "milestone", done: false },
+      { id: "s-16", owner: "sreerag", title: "Plan Bangalore relaunch", due: "This week", priority: "high", category: "milestone", done: false },
+      { id: "s-17", owner: "sreerag", title: "Complete one book reading", due: "This week", priority: "personal", category: "personal", done: false },
+      { id: "s-18", owner: "sreerag", title: "Create online tracker", due: "This week", priority: "work", category: "milestone", done: false }
     ];
 
-    const categoryOrder = ["work", "personal", "milestone", "daily"];
     const categoryLabels = {
       work: "Work",
       personal: "Personal",
@@ -590,7 +768,7 @@ Sreerag
 
       if (error) {
         remoteReady = false;
-        setSyncStatus("Supabase not ready: run setup SQL.");
+        setSyncStatus("Supabase not ready: " + error.message);
         render();
         return;
       }
@@ -610,30 +788,22 @@ Sreerag
     async function saveTasks() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
       document.getElementById("updatedAt").textContent = "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-
       if (!remoteReady) return;
+
       setSyncStatus("Saving shared tracker...");
       const { error } = await supabase
         .from("tracker_tasks")
         .upsert(tasks.map(toRow), { onConflict: "id" });
-      if (error) {
-        setSyncStatus("Shared save failed: " + error.message);
-        return;
-      }
-      setSyncStatus("Shared tracker saved.");
-    }
 
-    function setSyncStatus(message) {
-      document.getElementById("syncStatus").textContent = message;
+      setSyncStatus(error ? "Shared save failed: " + error.message : "Shared tracker saved.");
     }
 
     function visibleTasks() {
       const query = document.getElementById("searchInput").value.trim().toLowerCase();
       const person = document.getElementById("personFilter").value;
       const state = document.getElementById("stateFilter").value;
-
       return tasks.filter(task => {
-        const text = [task.title, task.owner, task.priority, task.due].join(" ").toLowerCase();
+        const text = [task.title, task.owner, task.priority, task.category, task.due].join(" ").toLowerCase();
         return (!query || text.includes(query))
           && (person === "all" || task.owner === person)
           && (state === "all" || (state === "done" ? task.done : !task.done));
@@ -642,47 +812,70 @@ Sreerag
 
     function render() {
       const current = visibleTasks();
-      document.getElementById("taskCount").textContent = current.length + " task" + (current.length === 1 ? "" : "s");
-      renderPerson("nandana", current.filter(task => task.owner === "nandana"));
-      renderPerson("sreerag", current.filter(task => task.owner === "sreerag"));
-      updateScores();
+      const nandana = current.filter(task => task.owner === "nandana");
+      const sreerag = current.filter(task => task.owner === "sreerag");
       document.getElementById("weekLabel").textContent = currentWeekLabel();
+      document.getElementById("taskCount").textContent = current.length + " task" + (current.length === 1 ? "" : "s");
+      document.getElementById("nandanaCount").textContent = nandana.length + " task" + (nandana.length === 1 ? "" : "s");
+      document.getElementById("sreeragCount").textContent = sreerag.length + " task" + (sreerag.length === 1 ? "" : "s");
+      renderNandana(nandana);
+      renderSreerag(sreerag);
+      updateScores();
     }
 
-    function renderPerson(owner, personTasks) {
-      const list = document.getElementById(owner + "TaskList");
-      document.getElementById(owner + "Count").textContent = personTasks.length + " task" + (personTasks.length === 1 ? "" : "s");
+    function renderNandana(nandana) {
+      document.getElementById("nandanaPriorityCount").textContent = nandana.length + " task" + (nandana.length === 1 ? "" : "s");
+      document.getElementById("nandanaPriorityList").innerHTML = nandana.length ? nandana.map(priorityRow).join("") : empty("No Nandana tasks match this view.");
+      renderTaskList("nandanaFutureList", nandana.filter(task => normalizeCategory(task.category) === "milestone"));
+      renderTaskList("nandanaPersonalList", nandana.filter(task => normalizeCategory(task.category) === "personal"));
+      renderTaskList("nandanaDailyList", nandana.filter(task => normalizeCategory(task.category) === "daily"));
+      renderTaskList("nandanaMilestoneList", nandana.filter(task => normalizeCategory(task.category) === "milestone"));
+      renderDayPlan("nandanaDayPlanList", nandana.filter(task => normalizeCategory(task.category) === "work" || normalizeCategory(task.category) === "milestone"));
+    }
 
-      list.innerHTML = personTasks.length ? categoryOrder.map(category => {
-        const groupedTasks = personTasks.filter(task => normalizeCategory(task.category) === category);
-        if (!groupedTasks.length) return "";
-        return `
-          <div class="category-block">
-            <div class="category-title">
-              <span>${categoryLabels[category]}</span>
-              <span class="pill">${groupedTasks.length} task${groupedTasks.length === 1 ? "" : "s"}</span>
-            </div>
-            ${groupedTasks.map(task => `
-        <article class="task ${task.done ? "done" : ""}">
-          <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask('${task.id}')" aria-label="Mark task done">
-          <div>
-            <div class="task-title">
-              <span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span>
-              <span>${escapeHtml(task.title)}</span>
-            </div>
-            <div class="task-meta">
-              <span>${capitalize(task.owner)}</span>
-              <span>${categoryLabels[normalizeCategory(task.category)]}</span>
-              <span>${escapeHtml(task.due || "Unscheduled")}</span>
-              <span>${task.done ? "Done" : "Open"}</span>
-            </div>
-          </div>
-          <button class="delete-btn" type="button" onclick="deleteTask('${task.id}')">Remove</button>
-        </article>
-            `).join("")}
-          </div>
-        `;
-      }).join("") : `<div class="empty">No ${capitalize(owner)} tasks match this view.</div>`;
+    function renderSreerag(sreerag) {
+      document.getElementById("sreeragTodoCount").textContent = sreerag.length + " task" + (sreerag.length === 1 ? "" : "s");
+      renderTaskList("sreeragTodoList", sreerag);
+      renderTaskList("sreeragTicketList", sreerag.filter(task => normalizeCategory(task.category) === "work"));
+      renderTaskList("sreeragWantList", sreerag.filter(task => normalizeCategory(task.category) === "milestone" || normalizeCategory(task.category) === "personal"));
+      renderTaskList("sreeragRoutineList", sreerag.filter(task => normalizeCategory(task.category) === "daily"));
+    }
+
+    function renderTaskList(id, list) {
+      document.getElementById(id).innerHTML = list.length ? list.map(taskCard).join("") : empty("Nothing here yet.");
+    }
+
+    function renderDayPlan(id, list) {
+      const groups = list.reduce((acc, task) => {
+        const due = task.due || "This week";
+        acc[due] = acc[due] || [];
+        acc[due].push(task);
+        return acc;
+      }, {});
+      document.getElementById(id).innerHTML = Object.keys(groups).length
+        ? Object.entries(groups).map(([due, dueTasks]) => `<div class="day-card span-6"><h4>${escapeHtml(due)}</h4><div class="task-list">${dueTasks.map(taskCard).join("")}</div></div>`).join("")
+        : empty("No dated work yet.");
+    }
+
+    function priorityRow(task) {
+      return `<div class="priority-row ${task.done ? "done" : ""}">
+        <span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span>
+        <label>${escapeHtml(task.title)}</label>
+        <span class="due">${escapeHtml(task.due || "This week")}</span>
+        <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask('${task.id}')" aria-label="Mark task done">
+        <button class="delete-btn" type="button" onclick="deleteTask('${task.id}')">Remove</button>
+      </div>`;
+    }
+
+    function taskCard(task) {
+      return `<article class="task ${task.done ? "done" : ""}">
+        <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask('${task.id}')" aria-label="Mark task done">
+        <div>
+          <div class="task-title"><span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span><span>${escapeHtml(task.title)}</span></div>
+          <div class="task-meta"><span>${capitalize(task.owner)}</span><span>${categoryLabels[normalizeCategory(task.category)]}</span><span>${escapeHtml(task.due || "This week")}</span><span>${task.done ? "Done" : "Open"}</span></div>
+        </div>
+        <button class="delete-btn" type="button" onclick="deleteTask('${task.id}')">Remove</button>
+      </article>`;
     }
 
     async function addTask(event) {
@@ -727,7 +920,6 @@ Sreerag
           owner = "sreerag";
           return [];
         }
-
         const parts = clean.split("|").map(part => part.trim()).filter(Boolean);
         const title = parts[0] || clean;
         const due = parts[1] || "This week";
@@ -738,11 +930,10 @@ Sreerag
     }
 
     function loadCurrentIntoPasteBox() {
-      const grouped = ["nandana", "sreerag"].map(owner => {
+      document.getElementById("bulkTasks").value = ["nandana", "sreerag"].map(owner => {
         const lines = tasks.filter(task => task.owner === owner).map(task => `- ${task.title} | ${task.due} | ${task.priority} | ${normalizeCategory(task.category)}`);
         return capitalize(owner) + "\n" + lines.join("\n");
-      });
-      document.getElementById("bulkTasks").value = grouped.join("\n\n");
+      }).join("\n\n");
     }
 
     async function toggleTask(id) {
@@ -756,8 +947,7 @@ Sreerag
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
       if (remoteReady) {
         const { error } = await supabase.from("tracker_tasks").delete().eq("id", id);
-        if (error) setSyncStatus("Shared delete failed: " + error.message);
-        else setSyncStatus("Shared tracker saved.");
+        setSyncStatus(error ? "Shared delete failed: " + error.message : "Shared tracker saved.");
       }
       document.getElementById("updatedAt").textContent = "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
       render();
@@ -785,14 +975,8 @@ Sreerag
         setSyncStatus("Shared replace failed: " + deleteResult.error.message);
         return;
       }
-
       const insertResult = await supabase.from("tracker_tasks").insert(nextTasks.map(toRow));
-      if (insertResult.error) {
-        setSyncStatus("Shared replace failed: " + insertResult.error.message);
-        return;
-      }
-
-      setSyncStatus("Shared tracker saved.");
+      setSyncStatus(insertResult.error ? "Shared replace failed: " + insertResult.error.message : "Shared tracker saved.");
     }
 
     function toRow(task, index) {
@@ -814,18 +998,18 @@ Sreerag
         owner: row.owner,
         title: row.title,
         due: row.due,
-        priority: row.priority,
-        category: normalizeCategory(row.category),
+        priority: normalizePriority(row.priority),
+        category: normalizeCategory(row.category || guessCategory(row.title, row.priority)),
         done: Boolean(row.done),
         position: row.position
       };
     }
 
     function updateScores() {
-      setScore("Nandana", tasks.filter(task => task.owner === "nandana"));
-      setScore("Sreerag", tasks.filter(task => task.owner === "sreerag"));
-      setScore("Work", tasks.filter(task => task.priority !== "personal"));
-      setScore("Personal", tasks.filter(task => task.priority === "personal"));
+      setScore("NandanaWork", tasks.filter(task => task.owner === "nandana" && ["work", "milestone"].includes(normalizeCategory(task.category))));
+      setScore("NandanaLife", tasks.filter(task => task.owner === "nandana" && ["personal", "daily"].includes(normalizeCategory(task.category))));
+      setScore("SreeragWork", tasks.filter(task => task.owner === "sreerag" && ["work", "milestone"].includes(normalizeCategory(task.category))));
+      setScore("SreeragLife", tasks.filter(task => task.owner === "sreerag" && ["personal", "daily"].includes(normalizeCategory(task.category))));
     }
 
     function setScore(name, scoreTasks) {
@@ -833,6 +1017,10 @@ Sreerag
       const total = scoreTasks.length;
       document.getElementById("score" + name).textContent = done + " / " + total;
       document.getElementById("bar" + name).style.width = total ? Math.round(done / total * 100) + "%" : "0%";
+    }
+
+    function setSyncStatus(message) {
+      document.getElementById("syncStatus").textContent = message;
     }
 
     function normalizePriority(value) {
@@ -850,15 +1038,15 @@ Sreerag
     function guessPriority(title) {
       const text = title.toLowerCase();
       if (text.includes("urgent") || text.includes("critical") || text.includes("sev")) return "critical";
-      if (text.includes("gym") || text.includes("call") || text.includes("health")) return "personal";
-      if (text.includes("high")) return "high";
+      if (text.includes("gym") || text.includes("call") || text.includes("health") || text.includes("premium")) return "personal";
+      if (text.includes("interview") || text.includes("jobs") || text.includes("research")) return "high";
       return "work";
     }
 
     function guessCategory(title, priority) {
       const text = title.toLowerCase();
       if (priority === "personal" || text.includes("gym") || text.includes("health") || text.includes("call")) return "daily";
-      if (text.includes("interview") || text.includes("jobs") || text.includes("research") || text.includes("scope")) return "milestone";
+      if (text.includes("interview") || text.includes("jobs") || text.includes("research") || text.includes("scope") || text.includes("tracker")) return "milestone";
       if (text.includes("passport") || text.includes("appointment") || text.includes("premium")) return "personal";
       return "work";
     }
@@ -896,10 +1084,15 @@ Sreerag
       }[char]));
     }
 
+    function empty(message) {
+      return `<div class="empty">${escapeHtml(message)}</div>`;
+    }
+
     Object.assign(window, {
       applyNextWeek,
       deleteTask,
       loadCurrentIntoPasteBox,
+      loadTasks,
       resetChecks,
       restoreDefaults,
       toggleTask
