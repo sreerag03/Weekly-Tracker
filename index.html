@@ -713,6 +713,9 @@ Sreerag
       { id: "n-16", owner: "nandana", title: "Research sustainable materials", due: "This week", priority: "high", category: "milestone", done: false },
       { id: "n-17", owner: "nandana", title: "Research passive cooling", due: "This week", priority: "high", category: "milestone", done: false },
       { id: "n-18", owner: "nandana", title: "Research heat-resistant facades and smart coatings", due: "This week", priority: "high", category: "milestone", done: false },
+      { id: "n-19", owner: "nandana", title: "Gym", due: "Daily", priority: "personal", category: "daily", done: false },
+      { id: "n-20", owner: "nandana", title: "Sleep early", due: "Daily", priority: "personal", category: "daily", done: false },
+      { id: "n-21", owner: "nandana", title: "Walk", due: "Daily", priority: "personal", category: "daily", done: false },
       { id: "s-1", owner: "sreerag", title: "Complete the G instance finance report", due: "This week", priority: "work", category: "work", done: false },
       { id: "s-2", owner: "sreerag", title: "Complete automation for daily used GPU collection", due: "This week", priority: "work", category: "work", done: false },
       { id: "s-3", owner: "sreerag", title: "Send Mirador report with explanation", due: "This week", priority: "critical", category: "work", done: false },
@@ -740,6 +743,7 @@ Sreerag
       daily: "Daily / routine"
     };
     const habitDays = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+    const coreHabitOrder = ["gym", "sleep early", "walk"];
 
     let tasks = loadLocalTasks();
     let remoteReady = false;
@@ -852,7 +856,8 @@ Sreerag
     }
 
     function renderHabitRows(id, list) {
-      document.getElementById(id).innerHTML = list.length ? list.map(habitRow).join("") : `<tr><td colspan="8" class="empty">No daily routine tasks yet.</td></tr>`;
+      const sorted = list.slice().sort(compareHabitTasks);
+      document.getElementById(id).innerHTML = sorted.length ? sorted.map(habitRow).join("") : `<tr><td colspan="8" class="empty">No daily routine tasks yet.</td></tr>`;
     }
 
     function habitRow(task) {
@@ -1107,6 +1112,17 @@ Sreerag
     function isWeekendTask(task) {
       const text = [task.title, task.due].join(" ").toLowerCase();
       return /\b(weekend|saturday|sunday|sat|sun)\b/.test(text);
+    }
+
+    function compareHabitTasks(a, b) {
+      const aIndex = coreHabitOrder.indexOf(String(a.title || "").toLowerCase());
+      const bIndex = coreHabitOrder.indexOf(String(b.title || "").toLowerCase());
+      if (aIndex !== -1 || bIndex !== -1) {
+        if (aIndex === -1) return 1;
+        if (bIndex === -1) return -1;
+        return aIndex - bIndex;
+      }
+      return (a.position || 0) - (b.position || 0);
     }
 
     function tagClass(priority) {
