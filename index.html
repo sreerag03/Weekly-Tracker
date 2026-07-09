@@ -119,26 +119,6 @@
       line-height: 1.45;
     }
 
-    .sync-box {
-      display: grid;
-      gap: 8px;
-    }
-
-    .sync-box input {
-      border-color: rgba(255, 255, 255, .18);
-      color: white;
-      background: rgba(255, 255, 255, .08);
-    }
-
-    .sync-box input::placeholder {
-      color: rgba(255, 255, 255, .55);
-    }
-
-    .sync-box button {
-      color: var(--ink);
-      background: white;
-    }
-
     .sync-status {
       min-height: 18px;
       color: rgba(255, 255, 255, .72);
@@ -405,11 +385,8 @@
           <small>Shared Sync</small>
           <strong>Supabase</strong>
         </div>
-        <div class="sync-box">
-          <input id="accessCodeInput" type="password" placeholder="Tracker access code" autocomplete="current-password" />
-          <button type="button" onclick="connectSharedTracker()">Connect tracker</button>
-          <div class="sync-status" id="syncStatus">Run the Supabase setup SQL first.</div>
-        </div>
+        <p>Everyone opening this page sees and edits the same tracker after the Supabase table is set up.</p>
+        <div class="sync-status" id="syncStatus">Connecting...</div>
       </aside>
     </header>
 
@@ -534,12 +511,9 @@ Sreerag
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
     const STORAGE_KEY = "weekly-tracker-abstract-v1";
-    const ACCESS_CODE_KEY = "weekly-tracker-access-code-v1";
     const SUPABASE_URL = "https://gfcwywpkmpgbixmpfrqd.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_NbD6KzIMrDXzzeSn0oNm-A_tyYTYzxN";
     const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-    let accessCode = localStorage.getItem(ACCESS_CODE_KEY) || "";
-    let sharedMode = false;
 
     const starterTasks = [
       { id: "n-1", owner: "nandana", title: "Get passport photos", due: "Tuesday", priority: "critical", done: false },
@@ -559,18 +533,15 @@ Sreerag
       { id: "s-7", owner: "sreerag", title: "Call Nandana daily", due: "Daily", priority: "personal", done: false }
     ];
 
-    let tasks = loadTasks();
-    document.getElementById("accessCodeInput").value = accessCode;
+    let tasks = loadLocalTasks();
+    let remoteReady = false;
 
     document.getElementById("searchInput").addEventListener("input", render);
     document.getElementById("personFilter").addEventListener("change", render);
     document.getElementById("stateFilter").addEventListener("change", render);
     document.getElementById("taskForm").addEventListener("submit", addTask);
-    document.getElementById("accessCodeInput").addEventListener("keydown", event => {
-      if (event.key === "Enter") connectSharedTracker();
-    });
 
-    function loadTasks() {
+    function loadLocalTasks() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
         return Array.isArray(saved) ? saved : starterTasks;
@@ -579,53 +550,47 @@ Sreerag
       }
     }
 
+    async function loadTasks() {
+      setSyncStatus("Loading shared tracker...");
+      const { data, error } = await supabase
+        .from("tracker_tasks")
+        .select("*")
+        .order("position", { ascending: true })
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        remoteReady = false;
+        setSyncStatus("Supabase not ready: run setup SQL.");
+        render();
+        return;
+      }
+
+      remoteReady = true;
+      if (data.length) {
+        tasks = data.map(fromRow);
+      } else {
+        tasks = starterTasks.map((task, index) => ({ ...task, position: index }));
+        await replaceRemoteTasks(tasks);
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      setSyncStatus("Shared tracker loaded.");
+      render();
+    }
+
     async function saveTasks() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
       document.getElementById("updatedAt").textContent = "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-      if (!sharedMode || !accessCode) return;
+      if (!remoteReady) return;
       setSyncStatus("Saving shared tracker...");
-      const { error } = await supabase.rpc("save_tracker_state", {
-        p_access_code: accessCode,
-        p_payload: tasks
-      });
+      const { error } = await supabase
+        .from("tracker_tasks")
+        .upsert(tasks.map(toRow), { onConflict: "id" });
       if (error) {
         setSyncStatus("Shared save failed: " + error.message);
         return;
       }
       setSyncStatus("Shared tracker saved.");
-    }
-
-    async function connectSharedTracker() {
-      accessCode = document.getElementById("accessCodeInput").value.trim();
-      if (!accessCode) {
-        setSyncStatus("Enter the tracker access code.");
-        return;
-      }
-
-      localStorage.setItem(ACCESS_CODE_KEY, accessCode);
-      setSyncStatus("Connecting...");
-
-      const { data, error } = await supabase.rpc("get_tracker_state", {
-        p_access_code: accessCode
-      });
-
-      if (error) {
-        sharedMode = false;
-        setSyncStatus("Could not connect: " + error.message);
-        return;
-      }
-
-      sharedMode = true;
-      if (Array.isArray(data) && data.length) {
-        tasks = data;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-        setSyncStatus("Shared tracker loaded.");
-      } else {
-        setSyncStatus("Shared tracker is empty. Saving starter list...");
-        await saveTasks();
-      }
-      render();
     }
 
     function setSyncStatus(message) {
@@ -698,8 +663,10 @@ Sreerag
       const parsed = parseBulkTasks(document.getElementById("bulkTasks").value);
       if (!parsed.length) return;
       if (!confirm("Replace this tracker with the pasted next-week list?")) return;
-      tasks = parsed;
-      await saveTasks();
+      tasks = parsed.map((task, index) => ({ ...task, position: index }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      if (remoteReady) await replaceRemoteTasks(tasks);
+      document.getElementById("updatedAt").textContent = "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
       render();
     }
 
@@ -741,7 +708,13 @@ Sreerag
 
     async function deleteTask(id) {
       tasks = tasks.filter(task => task.id !== id);
-      await saveTasks();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      if (remoteReady) {
+        const { error } = await supabase.from("tracker_tasks").delete().eq("id", id);
+        if (error) setSyncStatus("Shared delete failed: " + error.message);
+        else setSyncStatus("Shared tracker saved.");
+      }
+      document.getElementById("updatedAt").textContent = "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
       render();
     }
 
@@ -753,9 +726,52 @@ Sreerag
 
     async function restoreDefaults() {
       if (!confirm("Replace current tasks with the starter list?")) return;
-      tasks = starterTasks.map(task => ({ ...task }));
-      await saveTasks();
+      tasks = starterTasks.map((task, index) => ({ ...task, position: index }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      if (remoteReady) await replaceRemoteTasks(tasks);
+      document.getElementById("updatedAt").textContent = "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
       render();
+    }
+
+    async function replaceRemoteTasks(nextTasks) {
+      setSyncStatus("Replacing shared tracker...");
+      const deleteResult = await supabase.from("tracker_tasks").delete().neq("id", "__never__");
+      if (deleteResult.error) {
+        setSyncStatus("Shared replace failed: " + deleteResult.error.message);
+        return;
+      }
+
+      const insertResult = await supabase.from("tracker_tasks").insert(nextTasks.map(toRow));
+      if (insertResult.error) {
+        setSyncStatus("Shared replace failed: " + insertResult.error.message);
+        return;
+      }
+
+      setSyncStatus("Shared tracker saved.");
+    }
+
+    function toRow(task, index) {
+      return {
+        id: task.id,
+        owner: task.owner,
+        title: task.title,
+        due: task.due || "This week",
+        priority: normalizePriority(task.priority),
+        done: Boolean(task.done),
+        position: Number.isFinite(task.position) ? task.position : index
+      };
+    }
+
+    function fromRow(row) {
+      return {
+        id: row.id,
+        owner: row.owner,
+        title: row.title,
+        due: row.due,
+        priority: row.priority,
+        done: Boolean(row.done),
+        position: row.position
+      };
     }
 
     function updateScores() {
@@ -820,7 +836,6 @@ Sreerag
 
     Object.assign(window, {
       applyNextWeek,
-      connectSharedTracker,
       deleteTask,
       loadCurrentIntoPasteBox,
       resetChecks,
@@ -829,7 +844,7 @@ Sreerag
     });
 
     render();
-    if (accessCode) connectSharedTracker();
+    loadTasks();
   </script>
 </body>
 </html>
