@@ -209,13 +209,35 @@
 
     .task {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: auto 1fr auto;
       gap: 12px;
       align-items: start;
       padding: 12px;
       background: var(--panel-2);
       border: 1px solid var(--line);
       border-radius: var(--radius);
+    }
+
+    .checkmark {
+      width: 20px;
+      height: 20px;
+      margin-top: 1px;
+      border: 2px solid #b8c0cc;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      background: white;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    .done .checkmark {
+      border-color: var(--green);
+      background: var(--green);
     }
 
     .task-title {
@@ -267,6 +289,11 @@
     .work { color: var(--accent); background: var(--accent-soft); border-color: #ccd8ff; }
     .done { opacity: .62; }
     .done .task-title { text-decoration: line-through; }
+
+    .person-stack {
+      display: grid;
+      gap: 16px;
+    }
 
     .score-grid {
       display: grid;
@@ -331,7 +358,7 @@
       .hero, .panel, .status-panel { padding: 16px; }
       .score-grid, .form-grid { grid-template-columns: 1fr; }
       .form-grid .wide { grid-column: span 1; }
-      .task { grid-template-columns: 1fr; }
+      .task { grid-template-columns: auto 1fr; }
       .task-actions { justify-content: start; }
     }
   </style>
@@ -376,12 +403,27 @@
       <div class="panel span-8">
         <div class="panel-head">
           <div>
-            <h2>Live Tickets</h2>
-            <p class="subtitle" id="statusText">Loading tracker issues from GitHub...</p>
+            <h2>Live Tracker</h2>
+            <p class="subtitle" id="statusText">Loading Nandana and Sreerag tasks from GitHub...</p>
           </div>
           <span class="pill" id="issueCount">0 tasks</span>
         </div>
-        <div class="task-list" id="taskList"></div>
+        <div class="person-stack">
+          <section>
+            <div class="panel-head">
+              <h3>Nandana</h3>
+              <span class="pill" id="nandanaCount">0 tasks</span>
+            </div>
+            <div class="task-list" id="nandanaTaskList"></div>
+          </section>
+          <section>
+            <div class="panel-head">
+              <h3>Sreerag</h3>
+              <span class="pill" id="sreeragCount">0 tasks</span>
+            </div>
+            <div class="task-list" id="sreeragTaskList"></div>
+          </section>
+        </div>
       </div>
 
       <div class="panel span-4">
@@ -568,11 +610,18 @@
 
     function render() {
       const tasks = filteredTasks();
-      const list = document.getElementById("taskList");
       document.getElementById("issueCount").textContent = `${tasks.length} task${tasks.length === 1 ? "" : "s"}`;
+      renderPersonTasks("nandana", tasks.filter(task => task.owner === "nandana"));
+      renderPersonTasks("sreerag", tasks.filter(task => task.owner === "sreerag"));
+      updateScores(allTasks);
+    }
 
+    function renderPersonTasks(owner, tasks) {
+      const list = document.getElementById(`${owner}TaskList`);
+      document.getElementById(`${owner}Count`).textContent = `${tasks.length} task${tasks.length === 1 ? "" : "s"}`;
       list.innerHTML = tasks.length ? tasks.map(task => `
         <article class="task ${task.state === "closed" ? "done" : ""}">
+          <span class="checkmark" title="${task.state === "closed" ? "Done" : "Open"}">${task.state === "closed" ? "✓" : ""}</span>
           <div>
             <div class="task-title">
               <span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span>
@@ -589,9 +638,7 @@
             <a class="mini-link" href="${task.html_url}" target="_blank" rel="noreferrer">${task.number ? `Issue #${task.number}` : "Open"}</a>
           </div>
         </article>
-      `).join("") : `<div class="empty">No tasks match this filter.</div>`;
-
-      updateScores(allTasks);
+      `).join("") : `<div class="empty">No ${capitalize(owner)} tasks match this filter.</div>`;
     }
 
     function updateScores(tasks) {
