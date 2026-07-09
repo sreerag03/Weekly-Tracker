@@ -654,7 +654,10 @@ Sreerag
         </div>
         <div class="card span-6">
           <div class="card-title"><h3>Health & Routine</h3><span class="pill">simple targets</span></div>
-          <div class="task-list" id="sreeragRoutineList"></div>
+          <table class="habit-table">
+            <thead><tr><th>Habit</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+            <tbody id="sreeragHabitRows"></tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -840,7 +843,7 @@ Sreerag
       renderTaskList("sreeragTodoList", sreerag);
       renderTaskList("sreeragTicketList", sreerag.filter(task => normalizeCategory(task.category) === "work"));
       renderTaskList("sreeragWantList", sreerag.filter(task => normalizeCategory(task.category) === "milestone" || normalizeCategory(task.category) === "personal"));
-      renderTaskList("sreeragRoutineList", sreerag.filter(task => normalizeCategory(task.category) === "daily"));
+      renderHabitRows("sreeragHabitRows", sreerag.filter(task => normalizeCategory(task.category) === "daily"));
     }
 
     function renderTaskList(id, list) {
