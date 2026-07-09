@@ -621,7 +621,7 @@
       document.getElementById(`${owner}Count`).textContent = `${tasks.length} task${tasks.length === 1 ? "" : "s"}`;
       list.innerHTML = tasks.length ? tasks.map(task => `
         <article class="task ${task.state === "closed" ? "done" : ""}">
-          <span class="checkmark" title="${task.state === "closed" ? "Done" : "Open"}">${task.state === "closed" ? "✓" : ""}</span>
+          <span class="checkmark" title="${task.state === "closed" ? "Done" : "Open"}">${task.state === "closed" ? "&#10003;" : ""}</span>
           <div>
             <div class="task-title">
               <span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span>
