@@ -6,215 +6,250 @@
   <title>Weekly Tracker</title>
   <style>
     :root {
-      --bg: #ffffff;
-      --paper: #ffffff;
-      --soft: #f7f7f5;
-      --soft-2: #fbfaf8;
-      --text: #1f2328;
-      --muted: #707782;
-      --line: #e8e5df;
-      --ink: #111827;
-      --accent: #6f5cff;
-      --accent-soft: #f0eeff;
-      --green: #108548;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --panel-2: #fdfbf7;
+      --text: #1d2430;
+      --muted: #657184;
+      --line: #e4e7ec;
+      --ink: #101828;
+      --accent: #3563e9;
+      --accent-soft: #edf2ff;
+      --green: #127a45;
       --green-soft: #eaf7ef;
-      --amber: #b76e00;
-      --amber-soft: #fff5df;
-      --red: #c83532;
-      --red-soft: #fff0ef;
-      --blue: #1f6feb;
-      --blue-soft: #eef5ff;
-      --shadow: 0 22px 70px rgba(31, 35, 40, 0.08);
-      --shadow-soft: 0 10px 30px rgba(31, 35, 40, 0.06);
-      --radius: 24px;
+      --amber: #9a5b00;
+      --amber-soft: #fff4d8;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --shadow: 0 18px 45px rgba(16, 24, 40, 0.08);
+      --radius: 8px;
     }
 
     * { box-sizing: border-box; }
 
-    html { scroll-behavior: smooth; }
-
     body {
       margin: 0;
+      min-height: 100vh;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(circle at 12% 0%, rgba(111, 92, 255, 0.08), transparent 30%),
-        radial-gradient(circle at 86% 6%, rgba(255, 210, 122, 0.18), transparent 28%),
-        var(--bg);
-      min-height: 100vh;
+      background: var(--bg);
     }
 
     .wrap {
-      width: min(1180px, calc(100% - 32px));
+      width: min(1180px, calc(100% - 28px));
       margin: 0 auto;
-      padding: 34px 0 54px;
+      padding: 28px 0 46px;
     }
 
     header {
       display: grid;
-      grid-template-columns: 1.45fr 0.55fr;
-      gap: 18px;
-      margin-bottom: 18px;
+      grid-template-columns: 1fr 330px;
+      gap: 16px;
+      align-items: stretch;
+      margin-bottom: 16px;
     }
 
-    .hero, .card, .mini-card, .notice {
-      background: rgba(255,255,255,0.88);
+    .hero, .panel, .notice {
+      background: var(--panel);
       border: 1px solid var(--line);
-      box-shadow: var(--shadow-soft);
       border-radius: var(--radius);
+      box-shadow: var(--shadow);
     }
 
-    .hero {
-      padding: 34px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      width: 240px;
-      height: 240px;
-      border-radius: 999px;
-      right: -90px;
-      top: -92px;
-      background: linear-gradient(135deg, rgba(111,92,255,.12), rgba(255,202,87,.16));
-    }
+    .hero { padding: 28px; }
 
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: var(--soft-2);
-      border: 1px solid var(--line);
       color: var(--muted);
       font-size: 13px;
-      font-weight: 750;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
     }
 
     h1 {
-      margin: 18px 0 10px;
-      font-size: clamp(42px, 7vw, 82px);
-      letter-spacing: -0.07em;
-      line-height: 0.9;
+      margin: 12px 0 10px;
       color: var(--ink);
+      font-size: clamp(38px, 6vw, 72px);
+      line-height: .94;
+      letter-spacing: 0;
     }
 
+    h2, h3, h4, p { margin-top: 0; }
+    h2 { margin-bottom: 8px; font-size: clamp(24px, 3vw, 36px); letter-spacing: 0; }
+    h3 { margin-bottom: 0; font-size: 18px; }
+    h4 { margin-bottom: 10px; font-size: 15px; }
+
     .subtitle {
-      margin: 0;
-      max-width: 690px;
+      max-width: 760px;
+      margin-bottom: 0;
       color: var(--muted);
-      font-size: 17px;
+      font-size: 16px;
       line-height: 1.55;
     }
 
-    .side-panel {
+    .status-panel {
       padding: 22px;
+      color: white;
+      background: var(--ink);
+      border-radius: var(--radius);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 16px;
-      background: var(--ink);
-      color: white;
-      border-radius: var(--radius);
+      gap: 18px;
       box-shadow: var(--shadow);
     }
 
-    .side-panel small { color: rgba(255,255,255,.64); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    .side-panel strong { font-size: 32px; line-height: 1; letter-spacing: -.04em; }
-    .side-panel p { margin: 0; color: rgba(255,255,255,.72); line-height: 1.5; }
-
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
-
-    button {
-      border: 0;
-      cursor: pointer;
-      font: inherit;
-      border-radius: 999px;
-      padding: 11px 15px;
+    .status-panel small {
+      display: block;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, .65);
       font-weight: 800;
-      background: var(--ink);
-      color: white;
-      box-shadow: 0 10px 20px rgba(17,24,39,.10);
-      transition: .18s ease;
+      letter-spacing: .06em;
+      text-transform: uppercase;
     }
-    button.secondary { background: var(--soft); color: var(--ink); border: 1px solid var(--line); box-shadow: none; }
-    button:hover { transform: translateY(-1px); }
 
-    .tabs {
-      display: flex;
+    .status-panel strong { display: block; font-size: 38px; line-height: 1; }
+    .status-panel p { margin: 0; color: rgba(255, 255, 255, .72); line-height: 1.45; }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 180px 180px;
       gap: 10px;
-      flex-wrap: wrap;
-      margin: 18px 0;
+      margin: 16px 0;
     }
 
-    .tab {
-      text-decoration: none;
+    input, select, textarea, button {
+      font: inherit;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 11px 12px;
       color: var(--text);
       background: white;
-      border: 1px solid var(--line);
-      border-radius: 999px;
+    }
+
+    button, .button-link {
+      min-height: 42px;
+      border: 0;
+      border-radius: var(--radius);
       padding: 10px 14px;
-      font-weight: 800;
-      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      color: white;
+      background: var(--ink);
+      font-weight: 850;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .16s ease, opacity .16s ease;
     }
 
-    section { margin-top: 22px; }
-
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 12px;
-    }
-
-    h2 {
-      margin: 0;
-      font-size: clamp(26px, 3.6vw, 42px);
-      letter-spacing: -0.045em;
+    button:hover, .button-link:hover { transform: translateY(-1px); }
+    button.secondary, .button-link.secondary {
       color: var(--ink);
+      background: white;
+      border: 1px solid var(--line);
     }
 
-    .section-note { color: var(--muted); font-size: 14px; margin: 6px 0 0; }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
 
-    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .span-12 { grid-column: span 12; }
     .span-8 { grid-column: span 8; }
     .span-6 { grid-column: span 6; }
     .span-4 { grid-column: span 4; }
-    .span-12 { grid-column: span 12; }
 
-    .card { padding: 22px; }
+    .panel {
+      padding: 20px;
+    }
 
-    .card-title {
+    .panel-head {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      align-items: start;
+      gap: 14px;
       margin-bottom: 14px;
     }
 
-    .card-title h3 { margin: 0; font-size: 19px; letter-spacing: -.02em; }
-    .pill { font-size: 12px; font-weight: 850; color: var(--muted); background: var(--soft); border: 1px solid var(--line); border-radius: 999px; padding: 6px 9px; white-space: nowrap; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: #f2f4f7;
+      border: 1px solid var(--line);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
 
-    .task-list { display: grid; gap: 10px; }
+    .task-list {
+      display: grid;
+      gap: 10px;
+    }
 
     .task {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
       padding: 12px;
-      border-radius: 16px;
+      background: var(--panel-2);
       border: 1px solid var(--line);
-      background: var(--soft-2);
-      transition: .18s ease;
+      border-radius: var(--radius);
     }
-    .task:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
-    .task input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--accent); flex: 0 0 auto; }
-    .task label { line-height: 1.35; cursor: pointer; flex: 1; }
-    .task.done label { color: var(--muted); text-decoration: line-through; }
+
+    .task-title {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 6px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .mini-link {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 850;
+      text-decoration: none;
+      white-space: nowrap;
+    }
 
     .tag {
       display: inline-flex;
@@ -222,81 +257,82 @@
       padding: 4px 8px;
       border-radius: 999px;
       font-size: 11px;
-      font-weight: 850;
+      font-weight: 900;
       border: 1px solid transparent;
-      white-space: nowrap;
     }
-    .critical { background: var(--red-soft); color: var(--red); border-color: #ffd2cf; }
-    .high { background: var(--amber-soft); color: var(--amber); border-color: #ffe4ad; }
-    .personal { background: var(--green-soft); color: var(--green); border-color: #ccebd7; }
-    .career { background: var(--blue-soft); color: var(--blue); border-color: #cfe2ff; }
 
-    .priority-row {
+    .critical { color: var(--red); background: var(--red-soft); border-color: #ffd3ce; }
+    .high { color: var(--amber); background: var(--amber-soft); border-color: #ffe0a3; }
+    .personal { color: var(--green); background: var(--green-soft); border-color: #bde8cb; }
+    .work { color: var(--accent); background: var(--accent-soft); border-color: #ccd8ff; }
+    .done { opacity: .62; }
+    .done .task-title { text-decoration: line-through; }
+
+    .score-grid {
       display: grid;
-      grid-template-columns: 116px 1fr 104px 34px;
-      gap: 10px;
-      align-items: center;
-      padding: 11px 0;
-      border-bottom: 1px solid var(--line);
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
     }
-    .priority-row:last-child { border-bottom: 0; }
-    .priority-row .due { color: var(--muted); font-weight: 750; font-size: 13px; }
-    .priority-row input { width: 18px; height: 18px; accent-color: var(--accent); }
 
-    .day-card { background: var(--soft-2); border: 1px solid var(--line); border-radius: 20px; padding: 15px; }
-    .day-card h4 { margin: 0 0 10px; font-size: 15px; letter-spacing: -.01em; }
+    .score {
+      padding: 15px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
 
-    .habit-table { width: 100%; border-collapse: separate; border-spacing: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; }
-    .habit-table th, .habit-table td { padding: 12px 10px; text-align: center; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
-    .habit-table th { background: var(--soft); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-    .habit-table td:first-child, .habit-table th:first-child { text-align: left; font-weight: 850; }
-    .habit-table tr:last-child td { border-bottom: 0; }
-    .habit-table td:last-child, .habit-table th:last-child { border-right: 0; }
-    .habit-table input { width: 18px; height: 18px; accent-color: var(--accent); }
+    .score-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 850;
+    }
 
-    .score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-    .score { padding: 16px; border-radius: 20px; background: var(--soft-2); border: 1px solid var(--line); }
-    .score .top { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 12px; }
-    .score strong { font-size: 15px; }
-    .score span { color: var(--muted); font-size: 13px; font-weight: 800; }
-    .bar { height: 10px; border-radius: 999px; background: #ecebea; overflow: hidden; }
-    .fill { height: 100%; width: 0%; background: var(--ink); border-radius: inherit; transition: width .2s ease; }
+    .score-top span { color: var(--muted); }
+    .bar { height: 9px; overflow: hidden; border-radius: 999px; background: #e8ebf0; }
+    .fill { height: 100%; width: 0%; border-radius: inherit; background: var(--ink); transition: width .2s ease; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .form-grid .wide { grid-column: span 2; }
 
     .notice {
-      padding: 18px;
-      background: var(--soft-2);
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
+      padding: 15px;
+      color: var(--muted);
+      line-height: 1.5;
+      box-shadow: none;
+      background: #fff;
     }
-    .notice .icon { font-size: 22px; }
-    .notice p { margin: 0; line-height: 1.5; }
-    .danger { background: #fff7f6; border-color: #ffd8d5; }
 
-    .footer-quote {
-      margin-top: 22px;
-      padding: 24px;
+    .notice strong { color: var(--ink); }
+
+    .empty {
+      padding: 16px;
+      color: var(--muted);
+      border: 1px dashed var(--line);
       border-radius: var(--radius);
-      background: var(--ink);
-      color: white;
-      box-shadow: var(--shadow);
+      background: white;
     }
-    .footer-quote blockquote { margin: 0; font-size: clamp(22px, 3vw, 36px); font-weight: 850; letter-spacing: -.04em; line-height: 1.1; }
-    .footer-quote p { margin: 10px 0 0; color: rgba(255,255,255,.72); }
 
     @media (max-width: 900px) {
-      header { grid-template-columns: 1fr; }
+      header, .toolbar { grid-template-columns: 1fr; }
       .span-8, .span-6, .span-4 { grid-column: span 12; }
-      .score-grid { grid-template-columns: 1fr 1fr; }
-      .priority-row { grid-template-columns: 1fr; gap: 5px; }
-      .priority-row input { justify-self: start; }
+      .score-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 560px) {
-      .wrap { width: min(100% - 22px, 1180px); padding-top: 18px; }
-      .hero, .card { padding: 18px; }
-      .score-grid { grid-template-columns: 1fr; }
-      .habit-table th, .habit-table td { padding: 10px 6px; font-size: 12px; }
+      .wrap { width: min(100% - 20px, 1180px); padding-top: 18px; }
+      .hero, .panel, .status-panel { padding: 16px; }
+      .score-grid, .form-grid { grid-template-columns: 1fr; }
+      .form-grid .wide { grid-column: span 1; }
+      .task { grid-template-columns: 1fr; }
+      .task-actions { justify-content: start; }
     }
   </style>
 </head>
@@ -304,237 +340,356 @@
   <div class="wrap">
     <header>
       <div class="hero">
-        <span class="eyebrow">✦ Week of July 7 – 12, 2026</span>
+        <span class="eyebrow" id="weekLabel">Weekly Tracker</span>
         <h1>Weekly Tracker</h1>
-        <p class="subtitle">A clean command centre for Nandana and Sreerag — tasks, tickets, habits, project moves, and tiny life rules in one place.</p>
+        <p class="subtitle">A GitHub Pages tracker that reflects shared tickets from GitHub Issues. No server, no MySQL, no hidden backend: whoever opens the page sees the same issue-backed tasks.</p>
         <div class="actions">
-          <button onclick="window.print()">Print / Save PDF</button>
-          <button class="secondary" onclick="resetAll()">Reset checks</button>
+          <button type="button" onclick="refreshIssues()">Refresh tickets</button>
+          <button class="secondary" type="button" onclick="window.print()">Print / Save PDF</button>
+          <a class="button-link secondary" id="repoLink" target="_blank" rel="noreferrer">Open GitHub</a>
         </div>
       </div>
-      <div class="side-panel">
-        <small>Current Mode</small>
-        <strong>Stay locked in.</strong>
-        <p>Do the tickets. Clear the work. Keep the life side clean. No chaos tax.</p>
-      </div>
+      <aside class="status-panel">
+        <div>
+          <small>Shared Source</small>
+          <strong>GitHub Issues</strong>
+        </div>
+        <p>Close an issue to mark it done. Create a new issue to add a task. The page refreshes from GitHub for everyone.</p>
+      </aside>
     </header>
 
-    <nav class="tabs">
-      <a class="tab" href="#nandana">Nandana</a>
-      <a class="tab" href="#sreerag">Sreerag</a>
-      <a class="tab" href="#scoreboard">Scoreboard</a>
-      <a class="tab" href="#rules">Rules</a>
-    </nav>
+    <div class="toolbar">
+      <input id="searchInput" type="search" placeholder="Search tasks, tickets, people, or labels" />
+      <select id="personFilter" aria-label="Filter by owner">
+        <option value="all">Everyone</option>
+        <option value="nandana">Nandana</option>
+        <option value="sreerag">Sreerag</option>
+      </select>
+      <select id="stateFilter" aria-label="Filter by state">
+        <option value="all">All states</option>
+        <option value="open">Open</option>
+        <option value="closed">Done</option>
+      </select>
+    </div>
 
-    <section id="nandana">
-      <div class="section-head">
-        <div>
-          <h2>🌸 Nandana</h2>
-          <p class="section-note">Priority work, weekly habits, growth, weekend reset, and project research.</p>
-        </div>
-      </div>
-
-      <div class="grid">
-        <div class="card span-8">
-          <div class="card-title"><h3>🌟 Priority Dashboard</h3><span class="pill">12 tasks</span></div>
-          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>📸 Get passport photos</label><span class="due">Tuesday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>🏥 Book health screening</label><span class="due">Tuesday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>💡 Lighting inputs for Energy Team</label><span class="due">Tuesday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>📊 Finalise Qiddiya tracker</label><span class="due">Tuesday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>📧 Architects markups & email</label><span class="due">Tuesday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag high">🟠 High</span><label>☎️ Catch-up call with Dalia</label><span class="due">Wednesday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag high">🟠 High</span><label>🔥 Heat & Tile innovation research</label><span class="due">Wednesday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag high">🟠 High</span><label>🌴 Understand Ghaf project scope</label><span class="due">Wednesday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag high">🟠 High</span><label>👨‍🏫 Schedule mentor meeting</label><span class="due">Thursday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag high">🟠 High</span><label>🎓 Take Harvard Test</label><span class="due">Friday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag critical">🔴 Critical</span><label>📝 Finish 1.5 M1 Reports</label><span class="due">Friday</span><input data-group="nandana-work" type="checkbox"></div>
-          <div class="priority-row"><span class="tag personal">🟢 Personal</span><label>💍 Meet Ashni & return ornaments</label><span class="due">Saturday</span><input data-group="nandana-work" type="checkbox"></div>
-        </div>
-
-        <div class="card span-4">
-          <div class="card-title"><h3>🚀 Future Work</h3><span class="pill">Point Estate</span></div>
-          <div class="notice"><div class="icon">✅</div><p>Figured out where to start: <strong>Point Estate</strong> 😎</p></div>
-          <div class="task-list" style="margin-top:12px"><div class="task"><input data-group="nandana-extra" type="checkbox"><label>Begin execution this week</label></div></div>
-        </div>
-
-        <div class="card span-6">
-          <div class="card-title"><h3>💼 Work Planner</h3><span class="pill">By day</span></div>
-          <div class="grid">
-            <div class="day-card span-6"><h4>📅 Tuesday — Heavy Lifting</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Passport photos</label></div><div class="task"><input type="checkbox"><label>Book health screening</label></div><div class="task"><input type="checkbox"><label>Lighting inputs</label></div><div class="task"><input type="checkbox"><label>Finalise Qiddiya tracker</label></div><div class="task"><input type="checkbox"><label>Architects markups & email</label></div></div></div>
-            <div class="day-card span-6"><h4>📅 Wednesday — Build Momentum</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Call Dalia</label></div><div class="task"><input type="checkbox"><label>Heat & Tile innovation research</label></div><div class="task"><input type="checkbox"><label>Understand Ghaf scope</label></div></div></div>
-            <div class="day-card span-6"><h4>📅 Thursday — Steady Grind</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Schedule mentor meeting</label></div></div></div>
-            <div class="day-card span-6"><h4>📅 Friday / Saturday</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Harvard Test</label></div><div class="task"><input type="checkbox"><label>Finish 1.5 M1 Reports</label></div><div class="task"><input type="checkbox"><label>Meet Ashni</label></div><div class="task"><input type="checkbox"><label>Return ornaments</label></div></div></div>
+    <section class="grid">
+      <div class="panel span-8">
+        <div class="panel-head">
+          <div>
+            <h2>Live Tickets</h2>
+            <p class="subtitle" id="statusText">Loading tracker issues from GitHub...</p>
           </div>
+          <span class="pill" id="issueCount">0 tasks</span>
         </div>
-
-        <div class="card span-6">
-          <div class="card-title"><h3>💪 Habit Tracker</h3><span class="pill">Mon–Sun</span></div>
-          <table class="habit-table">
-            <thead><tr><th>Habit</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
-            <tbody>
-              <tr><td>🏋️ Gym</td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td></tr>
-              <tr><td>😴 Sleep early</td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td></tr>
-              <tr><td>🚶 Walk</td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td><td><input data-group="nandana-health" type="checkbox"></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="card span-4"><div class="card-title"><h3>🌱 Personal Growth</h3></div><div class="task-list"><div class="task"><input data-group="nandana-personal" type="checkbox"><label>🎓 Harvard Test</label></div><div class="task"><input data-group="nandana-personal" type="checkbox"><label>👨‍🏫 Schedule mentor meeting</label></div><div class="task"><input data-group="nandana-personal" type="checkbox"><label>🏥 Health screening booked</label></div></div></div>
-        <div class="card span-4"><div class="card-title"><h3>🎉 Weekend Reset</h3></div><div class="task-list"><div class="task"><input data-group="nandana-weekend" type="checkbox"><label>☕ Visit a café</label></div><div class="task"><input data-group="nandana-weekend" type="checkbox"><label>🧘 Pilates or Group Class</label></div><div class="task"><input data-group="nandana-weekend" type="checkbox"><label>👯 Catch up with Rishika or Ashni</label></div></div></div>
-        <div class="card span-4"><div class="card-title"><h3>🧠 Research Corner</h3></div><p class="section-note"><em>Heat & Tile Innovations — ideas to explore</em></p><div class="task-list" style="margin-top:12px"><div class="task"><input type="checkbox"><label>Sustainable materials</label></div><div class="task"><input type="checkbox"><label>Passive cooling</label></div><div class="task"><input type="checkbox"><label>Heat-resistant façades</label></div><div class="task"><input type="checkbox"><label>Smart coatings</label></div><div class="task"><input type="checkbox"><label>AI-based thermal modelling</label></div><div class="task"><input type="checkbox"><label>New construction technologies</label></div></div></div>
-      </div>
-    </section>
-
-    <section id="sreerag">
-      <div class="section-head">
-        <div>
-          <h2>⚡ Sreerag</h2>
-          <p class="section-note">Work tickets, interviews, Dubai applications, health goals, projects, and non-negotiables.</p>
-        </div>
+        <div class="task-list" id="taskList"></div>
       </div>
 
-      <div class="grid">
-        <div class="card span-8">
-          <div class="card-title"><h3>✅ To Do</h3><span class="pill">15 tasks</span></div>
-          <div class="task-list">
-            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Complete the G instance finance report</label></div>
-            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Complete the automation for collection of daily used GPUs using G*</label></div>
-            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Send out Mirador report with explanation — be careful, senior leadership may get confused</label></div>
-            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Hide from Swarna about interview</label></div>
-            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Give interview</label></div>
-            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Apply to 30 jobs in Dubai — per day</label></div>
-            <div class="task"><input data-group="sreerag-health" type="checkbox"><label>Gym on Tuesday, Thursday, Friday and Saturday morning</label></div>
-            <div class="task"><input data-group="sreerag-health" type="checkbox"><label>Increase calorie intake</label></div>
-            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>FSX movement tracker project</label></div>
-            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Olympus pretraining us-east-1 cleanup</label></div>
-            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Upscale on Sev 2 tickets — take the handover</label></div>
-            <div class="task"><input data-group="sreerag-work" type="checkbox"><label>Pipeline change task — push for start day</label></div>
-            <div class="task"><input data-group="sreerag-personal" type="checkbox"><label>Call Nandana daily <strong>(Very very important)</strong></label></div>
-            <div class="task"><input data-group="sreerag-personal" type="checkbox"><label>Life insurance premium to be paid</label></div>
-          </div>
+      <div class="panel span-4">
+        <div class="panel-head">
+          <h3>Add Task</h3>
+          <span class="pill">creates issue</span>
         </div>
-
-        <div class="card span-4">
-          <div class="card-title"><h3>🎯 Ticket Board</h3><span class="pill">focus lanes</span></div>
-          <div class="day-card" style="margin-bottom:10px"><h4>🔥 High Attention</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Mirador report clarity</label></div><div class="task"><input type="checkbox"><label>Sev 2 handover</label></div><div class="task"><input type="checkbox"><label>Olympus cleanup</label></div></div></div>
-          <div class="day-card"><h4>🚀 Growth Moves</h4><div class="task-list"><div class="task"><input type="checkbox"><label>Interview</label></div><div class="task"><input type="checkbox"><label>30 Dubai jobs/day</label></div><div class="task"><input type="checkbox"><label>Pipeline change push</label></div></div></div>
-        </div>
-
-        <div class="card span-6">
-          <div class="card-title"><h3>🌱 Want To Do</h3><span class="pill">nice but useful</span></div>
-          <div class="task-list">
-            <div class="task"><input data-group="sreerag-want" type="checkbox"><label>Call Nandana daily <strong>(Very very important)</strong></label></div>
-            <div class="task"><input data-group="sreerag-want" type="checkbox"><label>Design and launch the mobile update for older iOS — Together</label></div>
-            <div class="task"><input data-group="sreerag-want" type="checkbox"><label>Plan the idea and control Gautham for Bangalore relaunch</label></div>
-            <div class="task"><input data-group="sreerag-want" type="checkbox"><label>Complete one book reading</label></div>
-            <div class="task"><input data-group="sreerag-want" type="checkbox"><label>Create online tracker</label></div>
-          </div>
-        </div>
-
-        <div class="card span-6">
-          <div class="card-title"><h3>💪 Health & Routine</h3><span class="pill">simple targets</span></div>
-          <table class="habit-table">
-            <thead><tr><th>Habit</th><th>Tue</th><th>Thu</th><th>Fri</th><th>Sat AM</th><th>Daily</th></tr></thead>
-            <tbody>
-              <tr><td>🏋️ Gym</td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td>—</td></tr>
-              <tr><td>🍽️ Increase calories</td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td><td><input data-group="sreerag-health" type="checkbox"></td></tr>
-              <tr><td>📞 Call Nandana</td><td><input data-group="sreerag-personal" type="checkbox"></td><td><input data-group="sreerag-personal" type="checkbox"></td><td><input data-group="sreerag-personal" type="checkbox"></td><td><input data-group="sreerag-personal" type="checkbox"></td><td><input data-group="sreerag-personal" type="checkbox"></td></tr>
-            </tbody>
-          </table>
+        <form id="taskForm" class="form-grid">
+          <input class="wide" id="taskTitle" required placeholder="Task title" />
+          <select id="taskOwner">
+            <option value="sreerag">Sreerag</option>
+            <option value="nandana">Nandana</option>
+          </select>
+          <select id="taskPriority">
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+            <option value="work">Work</option>
+            <option value="personal">Personal</option>
+          </select>
+          <input id="taskDue" placeholder="Due day or date" />
+          <input id="taskWeek" placeholder="Week label, e.g. week:2026-07-13" />
+          <textarea class="wide" id="taskNotes" rows="4" placeholder="Notes, ticket link, context"></textarea>
+          <button class="wide" type="submit">Open GitHub Issue</button>
+        </form>
+        <div class="notice" style="margin-top:12px">
+          <strong>Why it opens GitHub:</strong> GitHub Pages cannot safely write to a database. Creating the issue in GitHub is the static-site-safe way to save shared tasks.
         </div>
       </div>
-    </section>
 
-    <section id="scoreboard">
-      <div class="card span-12">
-        <div class="card-title"><h3>📈 Weekly Scoreboard</h3><span class="pill">live progress</span></div>
+      <div class="panel span-12">
+        <div class="panel-head">
+          <h3>Weekly Scoreboard</h3>
+          <span class="pill" id="updatedAt">Not synced yet</span>
+        </div>
         <div class="score-grid">
-          <div class="score"><div class="top"><strong>Nandana Work</strong><span id="score-nandana-work">0 / 12</span></div><div class="bar"><div id="bar-nandana-work" class="fill"></div></div></div>
-          <div class="score"><div class="top"><strong>Nandana Health</strong><span id="score-nandana-health">0 / 21</span></div><div class="bar"><div id="bar-nandana-health" class="fill"></div></div></div>
-          <div class="score"><div class="top"><strong>Sreerag Work</strong><span id="score-sreerag-work">0 / 11</span></div><div class="bar"><div id="bar-sreerag-work" class="fill"></div></div></div>
-          <div class="score"><div class="top"><strong>Sreerag Life</strong><span id="score-sreerag-life">0 / 7</span></div><div class="bar"><div id="bar-sreerag-life" class="fill"></div></div></div>
+          <div class="score"><div class="score-top"><strong>Nandana</strong><span id="scoreNandana">0 / 0</span></div><div class="bar"><div class="fill" id="barNandana"></div></div></div>
+          <div class="score"><div class="score-top"><strong>Sreerag</strong><span id="scoreSreerag">0 / 0</span></div><div class="bar"><div class="fill" id="barSreerag"></div></div></div>
+          <div class="score"><div class="score-top"><strong>Work</strong><span id="scoreWork">0 / 0</span></div><div class="bar"><div class="fill" id="barWork"></div></div></div>
+          <div class="score"><div class="score-top"><strong>Personal</strong><span id="scorePersonal">0 / 0</span></div><div class="bar"><div class="fill" id="barPersonal"></div></div></div>
         </div>
       </div>
-    </section>
 
-    <section id="rules">
-      <div class="grid">
-        <div class="notice danger span-6">
-          <div class="icon">🚫</div>
-          <p><strong>Not Allowed This Week</strong><br>❌ Don't eat Maggie.<br>❌ Never order brisket from that idiot place ever again.</p>
+      <div class="panel span-6">
+        <div class="panel-head">
+          <h3>Start A New Week</h3>
+          <span class="pill">bulk issue links</span>
         </div>
-        <div class="notice span-6">
-          <div class="icon">✦</div>
-          <p><strong>Operating Rule</strong><br>Keep it visible, tick it daily, and don't let the small pending things become a dramatic side quest.</p>
-        </div>
+        <form id="weekForm" class="form-grid">
+          <input id="newWeekLabel" class="wide" required placeholder="New week label, e.g. week:2026-07-13" />
+          <textarea id="bulkTasks" class="wide" rows="7" placeholder="One task per line. Optional format: Owner | Priority | Due | Task title"></textarea>
+          <button class="wide" type="submit">Prepare New Week Links</button>
+        </form>
+        <div class="task-list" id="bulkLinks" style="margin-top:12px"></div>
       </div>
-      <div class="footer-quote">
-        <blockquote>Finish strong, then disappear into a café like a peaceful productivity villain.</blockquote>
-        <p>Clean week. Clean mind. Minimum drama. Maximum execution.</p>
+
+      <div class="panel span-6">
+        <div class="panel-head">
+          <h3>Column Guide</h3>
+          <span class="pill">issue fields</span>
+        </div>
+        <div class="notice">
+          <strong>Title</strong> is the task name. <strong>Owner</strong>, <strong>priority</strong>, <strong>due</strong>, and <strong>week</strong> are stored as issue body fields. Labels like <strong>weekly-tracker</strong>, <strong>sreerag</strong>, <strong>nandana</strong>, <strong>work</strong>, and <strong>personal</strong> make filtering easier if they exist in GitHub.
+        </div>
+        <div class="notice" style="margin-top:10px">
+          <strong>Done</strong> means the GitHub issue is closed. <strong>Open</strong> means pending. External ticket URLs can go in the notes and will stay visible to everyone.
+        </div>
       </div>
     </section>
   </div>
 
   <script>
-    const STORAGE_KEY = "weekly-tracker-v2";
+    const REPO_OWNER = "sreerag03";
+    const REPO_NAME = "Weekly-Tracker";
+    const TRACKER_PREFIX = "[Tracker]";
+    const ISSUE_API = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues?state=all&per_page=100`;
+    const ISSUE_NEW_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/issues/new`;
+    const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
 
-    function allChecks() { return Array.from(document.querySelectorAll('input[type="checkbox"]')); }
+    const seedTasks = [
+      { title: "Get passport photos", owner: "nandana", priority: "critical", due: "Tuesday", state: "open", labels: ["weekly-tracker", "nandana", "personal"], html_url: REPO_URL },
+      { title: "Book health screening", owner: "nandana", priority: "critical", due: "Tuesday", state: "open", labels: ["weekly-tracker", "nandana", "personal"], html_url: REPO_URL },
+      { title: "Lighting inputs for Energy Team", owner: "nandana", priority: "critical", due: "Tuesday", state: "open", labels: ["weekly-tracker", "nandana", "work"], html_url: REPO_URL },
+      { title: "Finalise Qiddiya tracker", owner: "nandana", priority: "critical", due: "Tuesday", state: "open", labels: ["weekly-tracker", "nandana", "work"], html_url: REPO_URL },
+      { title: "Architects markups and email", owner: "nandana", priority: "critical", due: "Tuesday", state: "open", labels: ["weekly-tracker", "nandana", "work"], html_url: REPO_URL },
+      { title: "Catch-up call with Dalia", owner: "nandana", priority: "high", due: "Wednesday", state: "open", labels: ["weekly-tracker", "nandana", "work"], html_url: REPO_URL },
+      { title: "Heat and Tile innovation research", owner: "nandana", priority: "high", due: "Wednesday", state: "open", labels: ["weekly-tracker", "nandana", "work"], html_url: REPO_URL },
+      { title: "Understand Ghaf project scope", owner: "nandana", priority: "high", due: "Wednesday", state: "open", labels: ["weekly-tracker", "nandana", "work"], html_url: REPO_URL },
+      { title: "Complete the G instance finance report", owner: "sreerag", priority: "high", due: "This week", state: "open", labels: ["weekly-tracker", "sreerag", "work"], html_url: REPO_URL },
+      { title: "Complete automation for daily used GPU collection", owner: "sreerag", priority: "high", due: "This week", state: "open", labels: ["weekly-tracker", "sreerag", "work"], html_url: REPO_URL },
+      { title: "Send Mirador report with explanation", owner: "sreerag", priority: "critical", due: "This week", state: "open", labels: ["weekly-tracker", "sreerag", "work"], html_url: REPO_URL },
+      { title: "Give interview", owner: "sreerag", priority: "high", due: "This week", state: "open", labels: ["weekly-tracker", "sreerag", "work"], html_url: REPO_URL },
+      { title: "Apply to 30 jobs in Dubai per day", owner: "sreerag", priority: "high", due: "Daily", state: "open", labels: ["weekly-tracker", "sreerag", "career"], html_url: REPO_URL },
+      { title: "Gym on Tuesday, Thursday, Friday and Saturday morning", owner: "sreerag", priority: "personal", due: "Tue/Thu/Fri/Sat", state: "open", labels: ["weekly-tracker", "sreerag", "personal"], html_url: REPO_URL },
+      { title: "Call Nandana daily", owner: "sreerag", priority: "personal", due: "Daily", state: "open", labels: ["weekly-tracker", "sreerag", "personal"], html_url: REPO_URL }
+    ];
 
-    function saveState() {
-      const state = allChecks().map(cb => cb.checked);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    let allTasks = [];
+
+    document.getElementById("repoLink").href = REPO_URL;
+    document.getElementById("searchInput").addEventListener("input", render);
+    document.getElementById("personFilter").addEventListener("change", render);
+    document.getElementById("stateFilter").addEventListener("change", render);
+    document.getElementById("taskForm").addEventListener("submit", createIssueFromForm);
+    document.getElementById("weekForm").addEventListener("submit", createBulkIssues);
+
+    function cleanTitle(title) {
+      return title.replace(TRACKER_PREFIX, "").trim();
     }
 
-    function loadState() {
+    function labelsOf(issue) {
+      return (issue.labels || []).map(label => typeof label === "string" ? label : label.name).filter(Boolean);
+    }
+
+    function parseField(body, fieldName) {
+      const pattern = new RegExp(`^${fieldName}:\\s*(.+)$`, "im");
+      const match = (body || "").match(pattern);
+      return match ? match[1].trim() : "";
+    }
+
+    function normalizeIssue(issue) {
+      const labels = labelsOf(issue);
+      const body = issue.body || "";
+      const owner = (parseField(body, "Owner") || labels.find(label => ["nandana", "sreerag"].includes(label.toLowerCase())) || "sreerag").toLowerCase();
+      const priority = (parseField(body, "Priority") || labels.find(label => ["critical", "high", "work", "personal"].includes(label.toLowerCase())) || "work").toLowerCase();
+      return {
+        id: issue.id,
+        number: issue.number,
+        title: cleanTitle(issue.title || "Untitled task"),
+        owner,
+        priority,
+        due: parseField(body, "Due") || "Unscheduled",
+        week: parseField(body, "Week") || "",
+        notes: parseField(body, "Notes"),
+        state: issue.state,
+        labels,
+        html_url: issue.html_url,
+        updated_at: issue.updated_at
+      };
+    }
+
+    function isTrackerIssue(issue) {
+      const labels = labelsOf(issue).map(label => label.toLowerCase());
+      return issue.title?.startsWith(TRACKER_PREFIX) || labels.includes("weekly-tracker");
+    }
+
+    async function refreshIssues() {
+      const status = document.getElementById("statusText");
+      status.textContent = "Syncing with GitHub Issues...";
+
       try {
-        const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-        allChecks().forEach((cb, i) => { cb.checked = Boolean(state[i]); });
-      } catch(e) {}
+        const response = await fetch(ISSUE_API, { headers: { "Accept": "application/vnd.github+json" } });
+        if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+
+        const issues = await response.json();
+        const trackerIssues = issues.filter(issue => !issue.pull_request && isTrackerIssue(issue)).map(normalizeIssue);
+        allTasks = trackerIssues.length ? trackerIssues : seedTasks;
+
+        status.textContent = trackerIssues.length
+          ? `Showing ${trackerIssues.length} shared GitHub issue tasks.`
+          : "No tracker issues found yet, so showing the seeded starter plan. Add tasks to make them shared.";
+
+        document.getElementById("updatedAt").textContent = `Synced ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+        render();
+      } catch (error) {
+        allTasks = seedTasks;
+        status.textContent = `Could not reach GitHub right now, showing seeded tasks. ${error.message}`;
+        document.getElementById("updatedAt").textContent = "Offline fallback";
+        render();
+      }
     }
 
-    function updateTaskStyles() {
-      document.querySelectorAll('.task').forEach(task => {
-        const cb = task.querySelector('input[type="checkbox"]');
-        if (cb && cb.checked) task.classList.add('done');
-        else task.classList.remove('done');
+    function filteredTasks() {
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
+      const person = document.getElementById("personFilter").value;
+      const state = document.getElementById("stateFilter").value;
+
+      return allTasks.filter(task => {
+        const text = [task.title, task.owner, task.priority, task.due, task.week, task.notes, ...(task.labels || [])].join(" ").toLowerCase();
+        return (!query || text.includes(query))
+          && (person === "all" || task.owner === person)
+          && (state === "all" || task.state === state);
       });
     }
 
-    function updateScore(group, labelId, barId) {
-      const boxes = Array.from(document.querySelectorAll(`[data-group="${group}"]`));
-      const done = boxes.filter(b => b.checked).length;
-      const total = boxes.length || 1;
-      const pct = Math.round((done / total) * 100);
-      const label = document.getElementById(labelId);
-      const bar = document.getElementById(barId);
-      if (label) label.textContent = `${done} / ${total}`;
-      if (bar) bar.style.width = `${pct}%`;
+    function render() {
+      const tasks = filteredTasks();
+      const list = document.getElementById("taskList");
+      document.getElementById("issueCount").textContent = `${tasks.length} task${tasks.length === 1 ? "" : "s"}`;
+
+      list.innerHTML = tasks.length ? tasks.map(task => `
+        <article class="task ${task.state === "closed" ? "done" : ""}">
+          <div>
+            <div class="task-title">
+              <span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span>
+              <span>${escapeHtml(task.title)}</span>
+            </div>
+            <div class="task-meta">
+              <span>${escapeHtml(capitalize(task.owner))}</span>
+              <span>${escapeHtml(task.due || "Unscheduled")}</span>
+              <span>${task.state === "closed" ? "Done" : "Open"}</span>
+              ${task.week ? `<span>${escapeHtml(task.week)}</span>` : ""}
+            </div>
+          </div>
+          <div class="task-actions">
+            <a class="mini-link" href="${task.html_url}" target="_blank" rel="noreferrer">${task.number ? `Issue #${task.number}` : "Open"}</a>
+          </div>
+        </article>
+      `).join("") : `<div class="empty">No tasks match this filter.</div>`;
+
+      updateScores(allTasks);
     }
 
-    function updateAll() {
-      updateTaskStyles();
-      updateScore('nandana-work', 'score-nandana-work', 'bar-nandana-work');
-      updateScore('nandana-health', 'score-nandana-health', 'bar-nandana-health');
-      updateScore('sreerag-work', 'score-sreerag-work', 'bar-sreerag-work');
-      const lifeGroups = ['sreerag-health', 'sreerag-personal', 'sreerag-want'];
-      const boxes = lifeGroups.flatMap(g => Array.from(document.querySelectorAll(`[data-group="${g}"]`)));
-      const done = boxes.filter(b => b.checked).length;
-      const total = boxes.length || 1;
-      document.getElementById('score-sreerag-life').textContent = `${done} / ${total}`;
-      document.getElementById('bar-sreerag-life').style.width = `${Math.round(done/total*100)}%`;
-      saveState();
+    function updateScores(tasks) {
+      setScore("Nandana", tasks.filter(task => task.owner === "nandana"));
+      setScore("Sreerag", tasks.filter(task => task.owner === "sreerag"));
+      setScore("Work", tasks.filter(task => !task.labels?.includes("personal") && task.priority !== "personal"));
+      setScore("Personal", tasks.filter(task => task.labels?.includes("personal") || task.priority === "personal"));
     }
 
-    function resetAll() {
-      if (!confirm('Reset all checkboxes?')) return;
-      allChecks().forEach(cb => cb.checked = false);
-      localStorage.removeItem(STORAGE_KEY);
-      updateAll();
+    function setScore(name, tasks) {
+      const done = tasks.filter(task => task.state === "closed").length;
+      const total = tasks.length;
+      const suffix = name.replace(/\s/g, "");
+      document.getElementById(`score${suffix}`).textContent = `${done} / ${total}`;
+      document.getElementById(`bar${suffix}`).style.width = total ? `${Math.round(done / total * 100)}%` : "0%";
     }
 
-    loadState();
-    allChecks().forEach(cb => cb.addEventListener('change', updateAll));
-    updateAll();
+    function createIssueFromForm(event) {
+      event.preventDefault();
+      const title = document.getElementById("taskTitle").value.trim();
+      const owner = document.getElementById("taskOwner").value;
+      const priority = document.getElementById("taskPriority").value;
+      const due = document.getElementById("taskDue").value.trim() || "Unscheduled";
+      const week = document.getElementById("taskWeek").value.trim() || currentWeekLabel();
+      const notes = document.getElementById("taskNotes").value.trim();
+      openIssue(title, owner, priority, due, week, notes);
+    }
+
+    function createBulkIssues(event) {
+      event.preventDefault();
+      const week = document.getElementById("newWeekLabel").value.trim();
+      const lines = document.getElementById("bulkTasks").value.split("\n").map(line => line.trim()).filter(Boolean);
+      const bulkLinks = document.getElementById("bulkLinks");
+      if (!lines.length) return;
+
+      bulkLinks.innerHTML = lines.map(line => {
+        const parts = line.split("|").map(part => part.trim());
+        const owner = (parts.length >= 4 ? parts[0] : "sreerag").toLowerCase();
+        const priority = (parts.length >= 4 ? parts[1] : "work").toLowerCase();
+        const due = parts.length >= 4 ? parts[2] : "This week";
+        const title = parts.length >= 4 ? parts.slice(3).join(" | ") : line;
+        const url = buildIssueUrl(title, owner, priority, due, week, "Created from Weekly Tracker new-week bulk entry.");
+        return `<a class="button-link secondary" href="${url}" target="_blank" rel="noreferrer">${escapeHtml(title)}</a>`;
+      }).join("");
+    }
+
+    function openIssue(title, owner, priority, due, week, notes) {
+      window.open(buildIssueUrl(title, owner, priority, due, week, notes), "_blank", "noopener,noreferrer");
+    }
+
+    function buildIssueUrl(title, owner, priority, due, week, notes) {
+      const issueTitle = `${TRACKER_PREFIX} ${title}`;
+      const body = [
+        `Owner: ${owner}`,
+        `Priority: ${priority}`,
+        `Due: ${due}`,
+        `Week: ${week}`,
+        `Notes: ${notes || "Added from the GitHub Pages weekly tracker."}`,
+        "",
+        "Close this issue when the task is complete."
+      ].join("\n");
+      const labels = ["weekly-tracker", owner, priority].join(",");
+      return `${ISSUE_NEW_URL}?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent(labels)}`;
+    }
+
+    function currentWeekLabel() {
+      const now = new Date();
+      const day = now.getDay();
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(now.setDate(diff));
+      return `week:${monday.toISOString().slice(0, 10)}`;
+    }
+
+    function tagClass(priority) {
+      if (priority === "critical") return "critical";
+      if (priority === "high") return "high";
+      if (priority === "personal") return "personal";
+      return "work";
+    }
+
+    function capitalize(value) {
+      return value ? value.charAt(0).toUpperCase() + value.slice(1) : "";
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    document.getElementById("taskWeek").value = currentWeekLabel();
+    document.getElementById("newWeekLabel").value = currentWeekLabel();
+    document.getElementById("weekLabel").textContent = `Week ${currentWeekLabel().replace("week:", "")}`;
+    refreshIssues();
   </script>
 </body>
 </html>
