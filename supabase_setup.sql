@@ -11,6 +11,7 @@ create table if not exists public.tracker_tasks (
   priority text not null default 'work' check (priority in ('critical', 'high', 'personal', 'work')),
   category text not null default 'work' check (category in ('work', 'personal', 'milestone', 'daily')),
   done boolean not null default false,
+  habit_days jsonb not null default '{}'::jsonb,
   position integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -20,6 +21,9 @@ alter table public.tracker_tasks enable row level security;
 
 alter table public.tracker_tasks
 add column if not exists category text not null default 'work';
+
+alter table public.tracker_tasks
+add column if not exists habit_days jsonb not null default '{}'::jsonb;
 
 alter table public.tracker_tasks
 drop constraint if exists tracker_tasks_category_check;

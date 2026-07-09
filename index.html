@@ -415,10 +415,6 @@
     .habit-table td:last-child, .habit-table th:last-child { border-right: 0; }
     .habit-table input { width: 18px; height: 18px; accent-color: var(--accent); }
 
-    .habit-dynamic {
-      margin-top: 14px;
-    }
-
     .score-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -626,13 +622,8 @@ Sreerag
           <div class="card-title"><h3>Habit Tracker</h3><span class="pill">daily</span></div>
           <table class="habit-table">
             <thead><tr><th>Habit</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
-            <tbody>
-              <tr><td>Gym</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
-              <tr><td>Sleep early</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
-              <tr><td>Walk</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
-            </tbody>
+            <tbody id="nandanaHabitRows"></tbody>
           </table>
-          <div class="habit-dynamic task-list" id="nandanaHabitTaskList"></div>
         </div>
         <div class="card span-4"><div class="card-title"><h3>Personal Growth</h3></div><div class="lane-list" id="nandanaPersonalList"></div></div>
         <div class="card span-4"><div class="card-title"><h3>Weekend Reset</h3></div><div class="lane-list" id="nandanaWeekendList"></div></div>
@@ -745,9 +736,11 @@ Sreerag
       milestone: "Professional milestones",
       daily: "Daily / routine"
     };
+    const habitDays = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
     let tasks = loadLocalTasks();
     let remoteReady = false;
+    let habitColumnReady = false;
 
     document.getElementById("searchInput").addEventListener("input", render);
     document.getElementById("personFilter").addEventListener("change", render);
@@ -779,6 +772,7 @@ Sreerag
       }
 
       remoteReady = true;
+      habitColumnReady = !data.length || Object.prototype.hasOwnProperty.call(data[0], "habit_days");
       if (data.length) {
         tasks = data.map(fromRow);
       } else {
@@ -835,7 +829,7 @@ Sreerag
       const weekendTasks = nandana.filter(task => normalizeCategory(task.category) === "personal" && String(task.due || "").toLowerCase().includes("weekend"));
       renderTaskList("nandanaFutureList", nandana.filter(task => normalizeCategory(task.category) === "milestone"));
       renderTaskList("nandanaPersonalList", nandana.filter(task => normalizeCategory(task.category) === "personal"));
-      renderTaskList("nandanaHabitTaskList", dailyTasks);
+      renderHabitRows("nandanaHabitRows", dailyTasks);
       renderTaskList("nandanaWeekendList", weekendTasks);
       renderTaskList("nandanaMilestoneList", nandana.filter(task => normalizeCategory(task.category) === "milestone"));
       renderDayPlan("nandanaDayPlanList", nandana.filter(task => normalizeCategory(task.category) === "work" || normalizeCategory(task.category) === "milestone"));
@@ -851,6 +845,20 @@ Sreerag
 
     function renderTaskList(id, list) {
       document.getElementById(id).innerHTML = list.length ? list.map(taskCard).join("") : empty("Nothing here yet.");
+    }
+
+    function renderHabitRows(id, list) {
+      document.getElementById(id).innerHTML = list.length ? list.map(habitRow).join("") : `<tr><td colspan="8" class="empty">No daily routine tasks yet.</td></tr>`;
+    }
+
+    function habitRow(task) {
+      return `<tr>
+        <td>
+          <strong>${escapeHtml(task.title)}</strong>
+          <div class="task-meta"><span>${capitalize(task.owner)}</span><span>${categoryLabels[normalizeCategory(task.category)]}</span><span>${escapeHtml(task.due || "This week")}</span></div>
+        </td>
+        ${habitDays.map(day => `<td><input type="checkbox" ${task.habitDays && task.habitDays[day] ? "checked" : ""} onchange="toggleHabitDay('${task.id}', '${day}')" aria-label="${escapeHtml(task.title)} ${day}"></td>`).join("")}
+      </tr>`;
     }
 
     function renderDayPlan(id, list) {
@@ -897,7 +905,8 @@ Sreerag
         priority: normalizePriority(document.getElementById("taskPriority").value),
         category: normalizeCategory(document.getElementById("taskCategory").value),
         due: document.getElementById("taskDue").value.trim() || "This week",
-        done: false
+        done: false,
+        habitDays: {}
       });
       event.target.reset();
       await saveTasks();
@@ -933,7 +942,7 @@ Sreerag
         const due = parts[1] || "This week";
         const priority = normalizePriority(parts[2] || guessPriority(title));
         const category = normalizeCategory(parts[3] || guessCategory(title, priority));
-        return [{ id: makeId(), owner, title, due, priority, category, done: false }];
+        return [{ id: makeId(), owner, title, due, priority, category, done: false, habitDays: {} }];
       });
     }
 
@@ -947,6 +956,35 @@ Sreerag
     async function toggleTask(id) {
       tasks = tasks.map(task => task.id === id ? { ...task, done: !task.done } : task);
       await saveTasks();
+      render();
+    }
+
+    async function toggleHabitDay(id, day) {
+      let changedTask;
+      tasks = tasks.map(task => {
+        if (task.id !== id) return task;
+        const habitDaysForTask = { ...(task.habitDays || {}) };
+        habitDaysForTask[day] = !habitDaysForTask[day];
+        changedTask = {
+          ...task,
+          habitDays: habitDaysForTask,
+          done: habitDays.every(weekday => Boolean(habitDaysForTask[weekday]))
+        };
+        return changedTask;
+      });
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      document.getElementById("updatedAt").textContent = "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      if (remoteReady && changedTask && habitColumnReady) {
+        setSyncStatus("Saving habit tracker...");
+        const { error } = await supabase
+          .from("tracker_tasks")
+          .update({ habit_days: changedTask.habitDays, done: changedTask.done })
+          .eq("id", id);
+        setSyncStatus(error ? "Habit save failed: run latest SQL setup." : "Shared tracker saved.");
+      } else if (remoteReady && !habitColumnReady) {
+        setSyncStatus("Run latest SQL setup to share weekday habit boxes.");
+      }
       render();
     }
 
@@ -988,7 +1026,7 @@ Sreerag
     }
 
     function toRow(task, index) {
-      return {
+      const row = {
         id: task.id,
         owner: task.owner,
         title: task.title,
@@ -998,6 +1036,8 @@ Sreerag
         done: Boolean(task.done),
         position: Number.isFinite(task.position) ? task.position : index
       };
+      if (habitColumnReady) row.habit_days = task.habitDays || {};
+      return row;
     }
 
     function fromRow(row) {
@@ -1009,6 +1049,7 @@ Sreerag
         priority: normalizePriority(row.priority),
         category: normalizeCategory(row.category || guessCategory(row.title, row.priority)),
         done: Boolean(row.done),
+        habitDays: normalizeHabitDays(row.habit_days, Boolean(row.done)),
         position: row.position
       };
     }
@@ -1066,6 +1107,18 @@ Sreerag
       return "work";
     }
 
+    function normalizeHabitDays(value, done = false) {
+      if (!value || typeof value !== "object" || Array.isArray(value)) {
+        return done ? habitDays.reduce((days, day) => ({ ...days, [day]: true }), {}) : {};
+      }
+      const hasAnyDay = habitDays.some(day => Object.prototype.hasOwnProperty.call(value, day));
+      if (!hasAnyDay && done) return habitDays.reduce((days, day) => ({ ...days, [day]: true }), {});
+      return habitDays.reduce((days, day) => {
+        days[day] = Boolean(value[day]);
+        return days;
+      }, {});
+    }
+
     function makeId() {
       return "task-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
     }
@@ -1103,6 +1156,7 @@ Sreerag
       loadTasks,
       resetChecks,
       restoreDefaults,
+      toggleHabitDay,
       toggleTask
     });
 
