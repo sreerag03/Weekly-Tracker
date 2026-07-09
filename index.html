@@ -415,6 +415,10 @@
     .habit-table td:last-child, .habit-table th:last-child { border-right: 0; }
     .habit-table input { width: 18px; height: 18px; accent-color: var(--accent); }
 
+    .habit-dynamic {
+      margin-top: 14px;
+    }
+
     .score-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -628,9 +632,10 @@ Sreerag
               <tr><td>Walk</td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td><td><input type="checkbox"></td></tr>
             </tbody>
           </table>
+          <div class="habit-dynamic task-list" id="nandanaHabitTaskList"></div>
         </div>
         <div class="card span-4"><div class="card-title"><h3>Personal Growth</h3></div><div class="lane-list" id="nandanaPersonalList"></div></div>
-        <div class="card span-4"><div class="card-title"><h3>Weekend Reset</h3></div><div class="lane-list" id="nandanaDailyList"></div></div>
+        <div class="card span-4"><div class="card-title"><h3>Weekend Reset</h3></div><div class="lane-list" id="nandanaWeekendList"></div></div>
         <div class="card span-4"><div class="card-title"><h3>Research Corner</h3></div><div class="lane-list" id="nandanaMilestoneList"></div></div>
       </div>
     </section>
@@ -826,9 +831,12 @@ Sreerag
     function renderNandana(nandana) {
       document.getElementById("nandanaPriorityCount").textContent = nandana.length + " task" + (nandana.length === 1 ? "" : "s");
       document.getElementById("nandanaPriorityList").innerHTML = nandana.length ? nandana.map(priorityRow).join("") : empty("No Nandana tasks match this view.");
+      const dailyTasks = nandana.filter(task => normalizeCategory(task.category) === "daily");
+      const weekendTasks = nandana.filter(task => normalizeCategory(task.category) === "personal" && String(task.due || "").toLowerCase().includes("weekend"));
       renderTaskList("nandanaFutureList", nandana.filter(task => normalizeCategory(task.category) === "milestone"));
       renderTaskList("nandanaPersonalList", nandana.filter(task => normalizeCategory(task.category) === "personal"));
-      renderTaskList("nandanaDailyList", nandana.filter(task => normalizeCategory(task.category) === "daily"));
+      renderTaskList("nandanaHabitTaskList", dailyTasks);
+      renderTaskList("nandanaWeekendList", weekendTasks);
       renderTaskList("nandanaMilestoneList", nandana.filter(task => normalizeCategory(task.category) === "milestone"));
       renderDayPlan("nandanaDayPlanList", nandana.filter(task => normalizeCategory(task.category) === "work" || normalizeCategory(task.category) === "milestone"));
     }
