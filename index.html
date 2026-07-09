@@ -119,6 +119,33 @@
       line-height: 1.45;
     }
 
+    .sync-box {
+      display: grid;
+      gap: 8px;
+    }
+
+    .sync-box input {
+      border-color: rgba(255, 255, 255, .18);
+      color: white;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .sync-box input::placeholder {
+      color: rgba(255, 255, 255, .55);
+    }
+
+    .sync-box button {
+      color: var(--ink);
+      background: white;
+    }
+
+    .sync-status {
+      min-height: 18px;
+      color: rgba(255, 255, 255, .72);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
     input, select, textarea, button {
       font: inherit;
     }
@@ -375,10 +402,14 @@
       </div>
       <aside class="status-panel">
         <div>
-          <small>Current Mode</small>
-          <strong>Clean weekly view</strong>
+          <small>Shared Sync</small>
+          <strong>Supabase</strong>
         </div>
-        <p>Everything updates instantly on this page and is saved in this browser.</p>
+        <div class="sync-box">
+          <input id="accessCodeInput" type="password" placeholder="Tracker access code" autocomplete="current-password" />
+          <button type="button" onclick="connectSharedTracker()">Connect tracker</button>
+          <div class="sync-status" id="syncStatus">Run the Supabase setup SQL first.</div>
+        </div>
       </aside>
     </header>
 
@@ -448,7 +479,7 @@
       <div class="panel span-12">
         <div class="panel-head">
           <h3>Weekly Scoreboard</h3>
-          <span class="pill" id="updatedAt">Saved locally</span>
+          <span class="pill" id="updatedAt">Not synced yet</span>
         </div>
         <div class="score-grid">
           <div class="score"><div class="score-top"><strong>Nandana</strong><span id="scoreNandana">0 / 0</span></div><div class="bar"><div class="fill" id="barNandana"></div></div></div>
@@ -499,8 +530,16 @@ Sreerag
     </section>
   </div>
 
-  <script>
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
     const STORAGE_KEY = "weekly-tracker-abstract-v1";
+    const ACCESS_CODE_KEY = "weekly-tracker-access-code-v1";
+    const SUPABASE_URL = "https://gfcwywpkmpgbixmpfrqd.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_NbD6KzIMrDXzzeSn0oNm-A_tyYTYzxN";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    let accessCode = localStorage.getItem(ACCESS_CODE_KEY) || "";
+    let sharedMode = false;
 
     const starterTasks = [
       { id: "n-1", owner: "nandana", title: "Get passport photos", due: "Tuesday", priority: "critical", done: false },
@@ -521,11 +560,15 @@ Sreerag
     ];
 
     let tasks = loadTasks();
+    document.getElementById("accessCodeInput").value = accessCode;
 
     document.getElementById("searchInput").addEventListener("input", render);
     document.getElementById("personFilter").addEventListener("change", render);
     document.getElementById("stateFilter").addEventListener("change", render);
     document.getElementById("taskForm").addEventListener("submit", addTask);
+    document.getElementById("accessCodeInput").addEventListener("keydown", event => {
+      if (event.key === "Enter") connectSharedTracker();
+    });
 
     function loadTasks() {
       try {
@@ -536,9 +579,57 @@ Sreerag
       }
     }
 
-    function saveTasks() {
+    async function saveTasks() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
       document.getElementById("updatedAt").textContent = "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+      if (!sharedMode || !accessCode) return;
+      setSyncStatus("Saving shared tracker...");
+      const { error } = await supabase.rpc("save_tracker_state", {
+        p_access_code: accessCode,
+        p_payload: tasks
+      });
+      if (error) {
+        setSyncStatus("Shared save failed: " + error.message);
+        return;
+      }
+      setSyncStatus("Shared tracker saved.");
+    }
+
+    async function connectSharedTracker() {
+      accessCode = document.getElementById("accessCodeInput").value.trim();
+      if (!accessCode) {
+        setSyncStatus("Enter the tracker access code.");
+        return;
+      }
+
+      localStorage.setItem(ACCESS_CODE_KEY, accessCode);
+      setSyncStatus("Connecting...");
+
+      const { data, error } = await supabase.rpc("get_tracker_state", {
+        p_access_code: accessCode
+      });
+
+      if (error) {
+        sharedMode = false;
+        setSyncStatus("Could not connect: " + error.message);
+        return;
+      }
+
+      sharedMode = true;
+      if (Array.isArray(data) && data.length) {
+        tasks = data;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+        setSyncStatus("Shared tracker loaded.");
+      } else {
+        setSyncStatus("Shared tracker is empty. Saving starter list...");
+        await saveTasks();
+      }
+      render();
+    }
+
+    function setSyncStatus(message) {
+      document.getElementById("syncStatus").textContent = message;
     }
 
     function visibleTasks() {
@@ -586,7 +677,7 @@ Sreerag
       `).join("") : `<div class="empty">No ${capitalize(owner)} tasks match this view.</div>`;
     }
 
-    function addTask(event) {
+    async function addTask(event) {
       event.preventDefault();
       const title = document.getElementById("taskTitle").value.trim();
       if (!title) return;
@@ -599,16 +690,16 @@ Sreerag
         done: false
       });
       event.target.reset();
-      saveTasks();
+      await saveTasks();
       render();
     }
 
-    function applyNextWeek() {
+    async function applyNextWeek() {
       const parsed = parseBulkTasks(document.getElementById("bulkTasks").value);
       if (!parsed.length) return;
       if (!confirm("Replace this tracker with the pasted next-week list?")) return;
       tasks = parsed;
-      saveTasks();
+      await saveTasks();
       render();
     }
 
@@ -642,28 +733,28 @@ Sreerag
       document.getElementById("bulkTasks").value = grouped.join("\n\n");
     }
 
-    function toggleTask(id) {
+    async function toggleTask(id) {
       tasks = tasks.map(task => task.id === id ? { ...task, done: !task.done } : task);
-      saveTasks();
+      await saveTasks();
       render();
     }
 
-    function deleteTask(id) {
+    async function deleteTask(id) {
       tasks = tasks.filter(task => task.id !== id);
-      saveTasks();
+      await saveTasks();
       render();
     }
 
-    function resetChecks() {
+    async function resetChecks() {
       tasks = tasks.map(task => ({ ...task, done: false }));
-      saveTasks();
+      await saveTasks();
       render();
     }
 
-    function restoreDefaults() {
+    async function restoreDefaults() {
       if (!confirm("Replace current tasks with the starter list?")) return;
       tasks = starterTasks.map(task => ({ ...task }));
-      saveTasks();
+      await saveTasks();
       render();
     }
 
@@ -727,7 +818,18 @@ Sreerag
       }[char]));
     }
 
+    Object.assign(window, {
+      applyNextWeek,
+      connectSharedTracker,
+      deleteTask,
+      loadCurrentIntoPasteBox,
+      resetChecks,
+      restoreDefaults,
+      toggleTask
+    });
+
     render();
+    if (accessCode) connectSharedTracker();
   </script>
 </body>
 </html>
