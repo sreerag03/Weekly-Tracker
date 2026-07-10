@@ -247,6 +247,16 @@
 
     .card { padding: 22px; }
 
+    details.card > summary {
+      list-style: none;
+      cursor: pointer;
+    }
+
+    details.card > summary::-webkit-details-marker { display: none; }
+    details.card:not([open]) > summary { margin-bottom: 0; }
+    details.card > summary .collapse-icon::before { content: "Hide"; }
+    details.card:not([open]) > summary .collapse-icon::before { content: "Show"; }
+
     .card-title {
       display: flex;
       align-items: center;
@@ -271,7 +281,7 @@
 
     .toolbar {
       display: grid;
-      grid-template-columns: minmax(220px, 1fr) 170px 170px;
+      grid-template-columns: minmax(220px, 1fr) 170px 170px 170px;
       gap: 10px;
       margin-top: 14px;
     }
@@ -297,6 +307,7 @@
 
     .priority-row:last-child { border-bottom: 0; }
     .priority-row.done label { color: var(--muted); text-decoration: line-through; }
+    .priority-row.overdue label { color: var(--red); }
     .priority-row .due { color: var(--muted); font-size: 13px; font-weight: 750; }
     .priority-row input, .task input { accent-color: var(--accent); }
 
@@ -347,6 +358,8 @@
       text-decoration: line-through;
     }
 
+    .task.overdue .task-title { color: var(--red); }
+
     .tag {
       display: inline-flex;
       align-items: center;
@@ -363,6 +376,7 @@
     .high { color: var(--amber); background: var(--amber-soft); border-color: #ffe4ad; }
     .personal { color: var(--green); background: var(--green-soft); border-color: #ccebd7; }
     .work { color: var(--blue); background: var(--blue-soft); border-color: #cfe2ff; }
+    .warning { color: var(--red); background: var(--red-soft); border-color: #ffd2cf; }
 
     .delete-btn {
       min-height: 30px;
@@ -472,6 +486,28 @@
     .footer-quote p {
       margin: 10px 0 0;
       color: rgba(255, 255, 255, .72);
+    }
+
+    .fireworks {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    .spark {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      animation: spark-pop .72s ease-out forwards;
+    }
+
+    @keyframes spark-pop {
+      0% { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.2); }
     }
 
     .empty {
@@ -592,6 +628,16 @@ Sreerag
               <option value="open">Open</option>
               <option value="done">Done</option>
             </select>
+            <select id="dayFilter" aria-label="Filter by day">
+              <option value="all">All days</option>
+              <option value="mon">Monday</option>
+              <option value="tue">Tuesday</option>
+              <option value="wed">Wednesday</option>
+              <option value="thu">Thursday</option>
+              <option value="fri">Friday</option>
+              <option value="sat">Saturday</option>
+              <option value="sun">Sunday</option>
+            </select>
           </div>
         </div>
       </div>
@@ -610,14 +656,14 @@ Sreerag
           <div class="card-title"><h3>Priority Dashboard</h3><span class="pill" id="nandanaPriorityCount">0 tasks</span></div>
           <div id="nandanaPriorityList"></div>
         </div>
-        <div class="card span-4">
-          <div class="card-title"><h3>Future Work</h3><span class="pill">Point Estate</span></div>
+        <details class="card span-4" open>
+          <summary class="card-title"><h3>Future Work</h3><span class="pill collapse-icon"></span></summary>
           <div class="lane-list" id="nandanaFutureList"></div>
-        </div>
-        <div class="card span-6">
-          <div class="card-title"><h3>Work Planner</h3><span class="pill">by due</span></div>
+        </details>
+        <details class="card span-6" open>
+          <summary class="card-title"><h3>Work Planner</h3><span class="pill collapse-icon"></span></summary>
           <div class="grid" id="nandanaDayPlanList"></div>
-        </div>
+        </details>
         <div class="card span-6">
           <div class="card-title"><h3>Habit Tracker</h3><span class="pill">daily</span></div>
           <table class="habit-table">
@@ -625,9 +671,9 @@ Sreerag
             <tbody id="nandanaHabitRows"></tbody>
           </table>
         </div>
-        <div class="card span-4"><div class="card-title"><h3>Personal Growth</h3></div><div class="lane-list" id="nandanaPersonalList"></div></div>
-        <div class="card span-4"><div class="card-title"><h3>Weekend Reset</h3></div><div class="lane-list" id="nandanaWeekendList"></div></div>
-        <div class="card span-4"><div class="card-title"><h3>Research Corner</h3></div><div class="lane-list" id="nandanaMilestoneList"></div></div>
+        <details class="card span-4"><summary class="card-title"><h3>Personal Growth</h3><span class="pill collapse-icon"></span></summary><div class="lane-list" id="nandanaPersonalList"></div></details>
+        <details class="card span-4"><summary class="card-title"><h3>Weekend Reset</h3><span class="pill collapse-icon"></span></summary><div class="lane-list" id="nandanaWeekendList"></div></details>
+        <details class="card span-4"><summary class="card-title"><h3>Research Corner</h3><span class="pill collapse-icon"></span></summary><div class="lane-list" id="nandanaMilestoneList"></div></details>
       </div>
     </section>
 
@@ -644,14 +690,14 @@ Sreerag
           <div class="card-title"><h3>To Do</h3><span class="pill" id="sreeragTodoCount">0 tasks</span></div>
           <div class="task-list" id="sreeragTodoList"></div>
         </div>
-        <div class="card span-4">
-          <div class="card-title"><h3>Ticket Board</h3><span class="pill">focus lanes</span></div>
+        <details class="card span-4" open>
+          <summary class="card-title"><h3>Ticket Board</h3><span class="pill collapse-icon"></span></summary>
           <div class="lane-list" id="sreeragTicketList"></div>
-        </div>
-        <div class="card span-6">
-          <div class="card-title"><h3>Want To Do</h3><span class="pill">nice but useful</span></div>
+        </details>
+        <details class="card span-6">
+          <summary class="card-title"><h3>Want To Do</h3><span class="pill collapse-icon"></span></summary>
           <div class="task-list" id="sreeragWantList"></div>
-        </div>
+        </details>
         <div class="card span-6">
           <div class="card-title"><h3>Health & Routine</h3><span class="pill">simple targets</span></div>
           <table class="habit-table">
@@ -685,6 +731,8 @@ Sreerag
       </div>
     </section>
   </div>
+
+  <div class="fireworks" id="fireworks"></div>
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -752,6 +800,7 @@ Sreerag
     document.getElementById("searchInput").addEventListener("input", render);
     document.getElementById("personFilter").addEventListener("change", render);
     document.getElementById("stateFilter").addEventListener("change", render);
+    document.getElementById("dayFilter").addEventListener("change", render);
     document.getElementById("taskForm").addEventListener("submit", addTask);
 
     function loadLocalTasks() {
@@ -808,11 +857,13 @@ Sreerag
       const query = document.getElementById("searchInput").value.trim().toLowerCase();
       const person = document.getElementById("personFilter").value;
       const state = document.getElementById("stateFilter").value;
+      const day = document.getElementById("dayFilter").value;
       return tasks.filter(task => {
         const text = [task.title, task.owner, task.priority, task.category, task.due].join(" ").toLowerCase();
         return (!query || text.includes(query))
           && (person === "all" || task.owner === person)
-          && (state === "all" || (state === "done" ? task.done : !task.done));
+          && (state === "all" || (state === "done" ? task.done : !task.done))
+          && (day === "all" || taskMatchesDay(task, day));
       });
     }
 
@@ -831,7 +882,7 @@ Sreerag
 
     function renderNandana(nandana) {
       document.getElementById("nandanaPriorityCount").textContent = nandana.length + " task" + (nandana.length === 1 ? "" : "s");
-      document.getElementById("nandanaPriorityList").innerHTML = nandana.length ? nandana.map(priorityRow).join("") : empty("No Nandana tasks match this view.");
+      document.getElementById("nandanaPriorityList").innerHTML = nandana.length ? sortTasks(nandana).map(priorityRow).join("") : empty("No Nandana tasks match this view.");
       const dailyTasks = nandana.filter(task => normalizeCategory(task.category) === "daily");
       const weekendTasks = nandana.filter(task => normalizeCategory(task.category) !== "daily" && isWeekendTask(task));
       const personalTasks = nandana.filter(task => normalizeCategory(task.category) === "personal" && !isWeekendTask(task));
@@ -852,7 +903,8 @@ Sreerag
     }
 
     function renderTaskList(id, list) {
-      document.getElementById(id).innerHTML = list.length ? list.map(taskCard).join("") : empty("Nothing here yet.");
+      const sorted = sortTasks(list);
+      document.getElementById(id).innerHTML = sorted.length ? sorted.map(taskCard).join("") : empty("Nothing here yet.");
     }
 
     function renderHabitRows(id, list) {
@@ -878,14 +930,15 @@ Sreerag
         return acc;
       }, {});
       document.getElementById(id).innerHTML = Object.keys(groups).length
-        ? Object.entries(groups).map(([due, dueTasks]) => `<div class="day-card span-6"><h4>${escapeHtml(due)}</h4><div class="task-list">${dueTasks.map(taskCard).join("")}</div></div>`).join("")
+        ? Object.entries(groups).map(([due, dueTasks]) => `<div class="day-card span-6"><h4>${escapeHtml(due)}</h4><div class="task-list">${sortTasks(dueTasks).map(taskCard).join("")}</div></div>`).join("")
         : empty("No dated work yet.");
     }
 
     function priorityRow(task) {
-      return `<div class="priority-row ${task.done ? "done" : ""}">
+      const overdue = isOverdue(task);
+      return `<div class="priority-row ${task.done ? "done" : ""} ${overdue ? "overdue" : ""}">
         <span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span>
-        <label>${escapeHtml(task.title)}</label>
+        <label>${overdue ? `<span class="tag warning">!</span> ` : ""}${escapeHtml(task.title)}</label>
         <span class="due">${escapeHtml(task.due || "This week")}</span>
         <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask('${task.id}')" aria-label="Mark task done">
         <button class="delete-btn" type="button" onclick="deleteTask('${task.id}')">Remove</button>
@@ -893,11 +946,12 @@ Sreerag
     }
 
     function taskCard(task) {
-      return `<article class="task ${task.done ? "done" : ""}">
+      const overdue = isOverdue(task);
+      return `<article class="task ${task.done ? "done" : ""} ${overdue ? "overdue" : ""}">
         <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask('${task.id}')" aria-label="Mark task done">
         <div>
-          <div class="task-title"><span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span><span>${escapeHtml(task.title)}</span></div>
-          <div class="task-meta"><span>${capitalize(task.owner)}</span><span>${categoryLabels[normalizeCategory(task.category)]}</span><span>${escapeHtml(task.due || "This week")}</span><span>${task.done ? "Done" : "Open"}</span></div>
+          <div class="task-title"><span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span>${overdue ? `<span class="tag warning">!</span>` : ""}<span>${escapeHtml(task.title)}</span></div>
+          <div class="task-meta"><span>${capitalize(task.owner)}</span><span>${categoryLabels[normalizeCategory(task.category)]}</span><span>${escapeHtml(task.due || "This week")}</span><span>${overdue ? "Past due" : task.done ? "Done" : "Open"}</span></div>
         </div>
         <button class="delete-btn" type="button" onclick="deleteTask('${task.id}')">Remove</button>
       </article>`;
@@ -963,9 +1017,11 @@ Sreerag
     }
 
     async function toggleTask(id) {
+      const wasDone = tasks.find(task => task.id === id)?.done;
       tasks = tasks.map(task => task.id === id ? { ...task, done: !task.done } : task);
       await saveTasks();
       render();
+      if (!wasDone) showFireworks();
     }
 
     async function toggleHabitDay(id, day) {
@@ -995,6 +1051,7 @@ Sreerag
         setSyncStatus("Run latest SQL setup to share weekday habit boxes.");
       }
       render();
+      if (changedTask && changedTask.habitDays && changedTask.habitDays[day]) showFireworks();
     }
 
     async function deleteTask(id) {
@@ -1123,6 +1180,81 @@ Sreerag
         return aIndex - bIndex;
       }
       return (a.position || 0) - (b.position || 0);
+    }
+
+    function sortTasks(list) {
+      return list.slice().sort((a, b) => {
+        if (a.done !== b.done) return a.done ? 1 : -1;
+        const aOverdue = isOverdue(a);
+        const bOverdue = isOverdue(b);
+        if (aOverdue !== bOverdue) return aOverdue ? -1 : 1;
+        return (a.position || 0) - (b.position || 0);
+      });
+    }
+
+    function isOverdue(task) {
+      if (!task || task.done || normalizeCategory(task.category) === "daily") return false;
+      const days = dueDayIndices(task);
+      if (!days.length) return false;
+      return days.every(day => day < normalizedTodayIndex());
+    }
+
+    function taskMatchesDay(task, day) {
+      if (normalizeCategory(task.category) === "daily") return true;
+      return dueDayKeys(task).includes(day);
+    }
+
+    function dueDayKeys(task) {
+      const combined = [task.due, task.title].join(" ").toLowerCase();
+      const keys = new Set();
+      const patterns = {
+        mon: /\b(mon|monday)\b/,
+        tue: /\b(tue|tues|tuesday)\b/,
+        wed: /\b(wed|wednesday)\b/,
+        thu: /\b(thu|thur|thurs|thursday)\b/,
+        fri: /\b(fri|friday)\b/,
+        sat: /\b(sat|saturday)\b/,
+        sun: /\b(sun|sunday)\b/
+      };
+      Object.entries(patterns).forEach(([key, pattern]) => {
+        if (pattern.test(combined)) keys.add(key);
+      });
+      if (/\bweekend\b/.test(combined)) {
+        keys.add("sat");
+        keys.add("sun");
+      }
+      if (/\bdaily\b/.test(combined)) habitDays.forEach(key => keys.add(key));
+      return Array.from(keys);
+    }
+
+    function dueDayIndices(task) {
+      const indexMap = { mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6, sun: 7 };
+      return dueDayKeys(task).map(day => indexMap[day]).filter(Boolean);
+    }
+
+    function normalizedTodayIndex() {
+      const day = new Date().getDay();
+      return day === 0 ? 7 : day;
+    }
+
+    function showFireworks() {
+      const layer = document.getElementById("fireworks");
+      const colors = ["#6f5cff", "#ffcc57", "#108548", "#1f6feb", "#c83532"];
+      const centerX = window.innerWidth / 2;
+      const centerY = Math.max(160, window.innerHeight * .32);
+      for (let i = 0; i < 34; i++) {
+        const spark = document.createElement("span");
+        const angle = (Math.PI * 2 * i) / 34;
+        const distance = 70 + Math.random() * 95;
+        spark.className = "spark";
+        spark.style.left = centerX + "px";
+        spark.style.top = centerY + "px";
+        spark.style.background = colors[i % colors.length];
+        spark.style.setProperty("--x", Math.cos(angle) * distance + "px");
+        spark.style.setProperty("--y", Math.sin(angle) * distance + "px");
+        layer.appendChild(spark);
+        setTimeout(() => spark.remove(), 760);
+      }
     }
 
     function tagClass(priority) {
