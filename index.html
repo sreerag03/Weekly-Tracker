@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-store" />
   <title>Weekly Tracker</title>
   <style>
     :root {
@@ -308,32 +309,7 @@
 
     .task-list, .lane-list { display: grid; gap: 10px; }
 
-    .priority-row {
-      display: grid;
-      grid-template-columns: 116px 1fr 104px 26px 76px;
-      gap: 10px;
-      align-items: center;
-      padding: 11px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .priority-row:last-child { border-bottom: 0; }
-    .priority-row.done label { color: var(--muted); text-decoration: line-through; }
-    .priority-row.overdue label { color: var(--red); }
-    .priority-row .due { color: var(--muted); font-size: 13px; font-weight: 750; }
-    .priority-row input, .task input { accent-color: var(--accent); }
-    .priority-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-      min-width: 0;
-    }
-    .priority-row label {
-      min-width: 0;
-      overflow-wrap: anywhere;
-      line-height: 1.35;
-    }
+    .task input { accent-color: var(--accent); }
 
     .task {
       display: grid;
@@ -579,8 +555,6 @@
       .span-8, .span-6, .span-4 { grid-column: span 12; }
       details.card:not([open]) { grid-column: span 12; }
       .score-grid { grid-template-columns: 1fr 1fr; }
-      .priority-row { grid-template-columns: 1fr; gap: 6px; }
-      .priority-row .delete-btn { justify-self: start; }
     }
 
     @media (max-width: 560px) {
@@ -596,49 +570,6 @@
       .card-title { align-items: flex-start; }
       .score-grid, .form-grid { grid-template-columns: 1fr; }
       .wide { grid-column: span 1; }
-      .priority-row {
-        grid-template-columns: 24px minmax(0, 1fr);
-        gap: 8px 9px;
-        align-items: start;
-        padding: 12px;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        background: var(--soft-2);
-        overflow: hidden;
-      }
-      .priority-row .priority-badges {
-        grid-column: 2;
-        grid-row: 1;
-      }
-      .priority-row label {
-        grid-column: 2;
-        grid-row: 2;
-        font-size: 14px;
-      }
-      .priority-row .due {
-        grid-column: 2;
-        grid-row: 3;
-        width: 100%;
-        min-height: 26px;
-        padding: 5px 8px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: white;
-        font-size: 11px;
-        overflow-wrap: anywhere;
-      }
-      .priority-row input {
-        grid-column: 1;
-        grid-row: 1;
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-      }
-      .priority-row .delete-btn {
-        grid-column: 2;
-        grid-row: 4;
-        justify-self: start;
-      }
       .task {
         grid-template-columns: 24px minmax(0, 1fr);
         gap: 9px;
@@ -914,6 +845,7 @@ Sreerag
     const STORAGE_KEY = "weekly-tracker-abstract-v2";
     const SUPABASE_URL = "https://gfcwywpkmpgbixmpfrqd.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_NbD6KzIMrDXzzeSn0oNm-A_tyYTYzxN";
+    const BUILD_LABEL = "priority-card-v2";
     const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
     const starterTasks = [
@@ -1056,7 +988,7 @@ Sreerag
 
     function renderNandana(nandana) {
       document.getElementById("nandanaPriorityCount").textContent = nandana.length + " task" + (nandana.length === 1 ? "" : "s");
-      document.getElementById("nandanaPriorityList").innerHTML = nandana.length ? sortTasks(nandana).map(priorityRow).join("") : empty("No Nandana tasks match this view.");
+      renderTaskList("nandanaPriorityList", nandana);
       const dailyTasks = nandana.filter(isDailyHabitTask);
       const weekendTasks = nandana.filter(task => normalizeCategory(task.category) !== "daily" && isWeekendTask(task));
       const personalTasks = nandana.filter(task => normalizeCategory(task.category) === "personal" && !isWeekendTask(task));
@@ -1106,17 +1038,6 @@ Sreerag
       document.getElementById(id).innerHTML = Object.keys(groups).length
         ? Object.entries(groups).map(([due, dueTasks]) => `<div class="day-card span-6"><h4>${escapeHtml(due)}</h4><div class="task-list">${sortTasks(dueTasks).map(taskCard).join("")}</div></div>`).join("")
         : empty("No dated work yet.");
-    }
-
-    function priorityRow(task) {
-      const overdue = isOverdue(task);
-      return `<div class="priority-row ${task.done ? "done" : ""} ${overdue ? "overdue" : ""}">
-        <div class="priority-badges"><span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span>${overdue ? `<span class="tag warning">!</span>` : ""}</div>
-        <label>${escapeHtml(task.title)}</label>
-        <span class="due">${escapeHtml(task.due || "This week")}</span>
-        <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask('${task.id}')" aria-label="Mark task done">
-        <button class="delete-btn" type="button" onclick="deleteTask('${task.id}')">Remove</button>
-      </div>`;
     }
 
     function taskCard(task) {
@@ -1317,7 +1238,7 @@ Sreerag
     }
 
     function setSyncStatus(message) {
-      document.getElementById("syncStatus").textContent = message;
+      document.getElementById("syncStatus").textContent = message + " " + BUILD_LABEL;
     }
 
     function normalizePriority(value) {
