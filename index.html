@@ -585,10 +585,12 @@
       .score-grid, .form-grid { grid-template-columns: 1fr; }
       .wide { grid-column: span 1; }
       .task {
-        grid-template-columns: 24px 1fr;
+        grid-template-columns: 24px minmax(0, 1fr);
         gap: 9px;
         padding: 11px;
         border-radius: 14px;
+        width: 100%;
+        overflow: hidden;
       }
       .task input {
         width: 20px;
@@ -596,33 +598,38 @@
         margin-top: 2px;
       }
       .task-badges {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, max-content));
+        display: flex;
+        flex-wrap: wrap;
         gap: 6px;
       }
       .task-title {
         margin-bottom: 8px;
         font-size: 14px;
         line-height: 1.4;
+        width: 100%;
       }
       .task-meta {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: 6px;
         font-size: 11px;
       }
       .task-meta span {
-        justify-content: center;
+        justify-content: flex-start;
         min-width: 0;
         min-height: 26px;
-        padding: 4px 6px;
-        text-align: center;
+        width: 100%;
+        padding: 5px 8px;
+        text-align: left;
         overflow-wrap: anywhere;
+        white-space: normal;
       }
       .tag {
-        justify-content: center;
+        justify-content: flex-start;
         min-height: 24px;
-        min-width: 68px;
+        min-width: 0;
+        max-width: 100%;
+        white-space: normal;
       }
       .delete-btn { grid-column: 2; justify-self: start; }
       .habit-table th, .habit-table td { padding: 10px 8px; font-size: 12px; }
