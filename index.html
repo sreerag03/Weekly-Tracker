@@ -99,6 +99,7 @@
       font-size: clamp(42px, 7vw, 82px);
       line-height: .9;
       letter-spacing: 0;
+      overflow-wrap: anywhere;
     }
 
     h2 {
@@ -199,6 +200,8 @@
       margin-top: 22px;
     }
 
+    .actions button { flex: 0 1 auto; }
+
     .tabs {
       display: flex;
       flex-wrap: wrap;
@@ -269,7 +272,10 @@
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 14px;
+      min-width: 0;
     }
+
+    .card-title h3 { min-width: 0; overflow-wrap: anywhere; }
 
     .pill {
       display: inline-flex;
@@ -327,6 +333,7 @@
       border-radius: 16px;
       background: var(--soft-2);
       transition: .18s ease;
+      min-width: 0;
     }
 
     .task:hover {
@@ -348,6 +355,8 @@
       margin-bottom: 6px;
       font-weight: 800;
       line-height: 1.35;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .task-meta {
@@ -357,6 +366,7 @@
       color: var(--muted);
       font-size: 12px;
       font-weight: 750;
+      overflow-wrap: anywhere;
     }
 
     .task.done .task-title {
@@ -404,6 +414,7 @@
 
     .habit-table {
       width: 100%;
+      min-width: 620px;
       border-collapse: separate;
       border-spacing: 0;
       overflow: hidden;
@@ -434,6 +445,13 @@
     .habit-table tr:last-child td { border-bottom: 0; }
     .habit-table td:last-child, .habit-table th:last-child { border-right: 0; }
     .habit-table input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+    .habit-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 18px;
+    }
 
     .score-grid {
       display: grid;
@@ -529,18 +547,31 @@
     @media (max-width: 900px) {
       header, .toolbar { grid-template-columns: 1fr; }
       .span-8, .span-6, .span-4 { grid-column: span 12; }
+      details.card:not([open]) { grid-column: span 12; }
       .score-grid { grid-template-columns: 1fr 1fr; }
       .priority-row { grid-template-columns: 1fr; gap: 6px; }
+      .priority-row .delete-btn { justify-self: start; }
     }
 
     @media (max-width: 560px) {
       .wrap { width: min(100% - 22px, 1180px); padding-top: 18px; }
       .hero, .card, .side-panel { padding: 18px; }
+      h1 { font-size: clamp(38px, 15vw, 58px); }
+      h2 { font-size: 28px; }
+      .subtitle { font-size: 15px; }
+      .actions { display: grid; grid-template-columns: 1fr; }
+      .actions button { width: 100%; }
+      .tabs { display: grid; grid-template-columns: 1fr 1fr; }
+      .tab { text-align: center; }
+      .card-title { align-items: flex-start; }
       .score-grid, .form-grid { grid-template-columns: 1fr; }
       .wide { grid-column: span 1; }
       .task { grid-template-columns: auto 1fr; }
       .delete-btn { grid-column: 2; justify-self: start; }
-      .habit-table th, .habit-table td { padding: 10px 6px; font-size: 12px; }
+      .habit-table th, .habit-table td { padding: 10px 8px; font-size: 12px; }
+      .score-grid { gap: 10px; }
+      .score { padding: 13px; }
+      details.card:not([open]) { padding: 14px 16px; }
     }
   </style>
 </head>
@@ -686,10 +717,12 @@ Sreerag
         </details>
         <div class="card span-6">
           <div class="card-title"><h3>Habit Tracker</h3><span class="pill">daily</span></div>
-          <table class="habit-table">
-            <thead><tr><th>Habit</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
-            <tbody id="nandanaHabitRows"></tbody>
-          </table>
+          <div class="habit-table-wrap">
+            <table class="habit-table">
+              <thead><tr><th>Habit</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+              <tbody id="nandanaHabitRows"></tbody>
+            </table>
+          </div>
         </div>
         <details class="card span-4"><summary class="card-title"><h3>Personal Growth</h3><span class="pill collapse-icon"></span></summary><div class="lane-list" id="nandanaPersonalList"></div></details>
         <details class="card span-4"><summary class="card-title"><h3>Weekend Reset</h3><span class="pill collapse-icon"></span></summary><div class="lane-list" id="nandanaWeekendList"></div></details>
@@ -720,10 +753,12 @@ Sreerag
         </details>
         <div class="card span-6">
           <div class="card-title"><h3>Health & Routine</h3><span class="pill">simple targets</span></div>
-          <table class="habit-table">
-            <thead><tr><th>Habit</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
-            <tbody id="sreeragHabitRows"></tbody>
-          </table>
+          <div class="habit-table-wrap">
+            <table class="habit-table">
+              <thead><tr><th>Habit</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+              <tbody id="sreeragHabitRows"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
