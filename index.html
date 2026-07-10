@@ -504,16 +504,18 @@
 
     .spark {
       position: absolute;
-      width: 11px;
-      height: 11px;
+      width: 14px;
+      height: 14px;
       border-radius: 999px;
       background: var(--accent);
-      animation: spark-pop .72s ease-out forwards;
+      box-shadow: 0 0 18px currentColor;
+      animation: spark-pop 1.35s ease-out forwards;
     }
 
     @keyframes spark-pop {
-      0% { opacity: 1; transform: translate(0, 0) scale(1); }
-      100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.2); }
+      0% { opacity: 1; transform: translate(0, 0) scale(1.15); }
+      70% { opacity: .9; }
+      100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.15); }
     }
 
     .empty {
@@ -1272,21 +1274,30 @@ Sreerag
     function showFireworks() {
       const layer = document.getElementById("fireworks");
       const colors = ["#6f5cff", "#ffcc57", "#108548", "#1f6feb", "#c83532"];
-      const centerX = window.innerWidth / 2;
-      const centerY = Math.max(160, window.innerHeight * .32);
-      for (let i = 0; i < 58; i++) {
-        const spark = document.createElement("span");
-        const angle = (Math.PI * 2 * i) / 58;
-        const distance = 110 + Math.random() * 150;
-        spark.className = "spark";
-        spark.style.left = centerX + "px";
-        spark.style.top = centerY + "px";
-        spark.style.background = colors[i % colors.length];
-        spark.style.setProperty("--x", Math.cos(angle) * distance + "px");
-        spark.style.setProperty("--y", Math.sin(angle) * distance + "px");
-        layer.appendChild(spark);
-        setTimeout(() => spark.remove(), 760);
-      }
+      const origins = [
+        [window.innerWidth * .5, window.innerHeight * .35],
+        [window.innerWidth * .2, window.innerHeight * .22],
+        [window.innerWidth * .8, window.innerHeight * .24],
+        [window.innerWidth * .28, window.innerHeight * .68],
+        [window.innerWidth * .72, window.innerHeight * .66]
+      ];
+
+      origins.forEach(([centerX, centerY], burstIndex) => {
+        for (let i = 0; i < 44; i++) {
+          const spark = document.createElement("span");
+          const angle = (Math.PI * 2 * i) / 44;
+          const distance = Math.min(window.innerWidth, window.innerHeight) * (.28 + Math.random() * .38);
+          spark.className = "spark";
+          spark.style.left = centerX + "px";
+          spark.style.top = centerY + "px";
+          spark.style.background = colors[(i + burstIndex) % colors.length];
+          spark.style.color = colors[(i + burstIndex) % colors.length];
+          spark.style.setProperty("--x", Math.cos(angle) * distance + "px");
+          spark.style.setProperty("--y", Math.sin(angle) * distance + "px");
+          layer.appendChild(spark);
+          setTimeout(() => spark.remove(), 1450);
+        }
+      });
     }
 
     function tagClass(priority) {
