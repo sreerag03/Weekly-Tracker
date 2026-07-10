@@ -322,6 +322,18 @@
     .priority-row.overdue label { color: var(--red); }
     .priority-row .due { color: var(--muted); font-size: 13px; font-weight: 750; }
     .priority-row input, .task input { accent-color: var(--accent); }
+    .priority-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      min-width: 0;
+    }
+    .priority-row label {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      line-height: 1.35;
+    }
 
     .task {
       display: grid;
@@ -584,6 +596,49 @@
       .card-title { align-items: flex-start; }
       .score-grid, .form-grid { grid-template-columns: 1fr; }
       .wide { grid-column: span 1; }
+      .priority-row {
+        grid-template-columns: 24px minmax(0, 1fr);
+        gap: 8px 9px;
+        align-items: start;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--soft-2);
+        overflow: hidden;
+      }
+      .priority-row .priority-badges {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      .priority-row label {
+        grid-column: 2;
+        grid-row: 2;
+        font-size: 14px;
+      }
+      .priority-row .due {
+        grid-column: 2;
+        grid-row: 3;
+        width: 100%;
+        min-height: 26px;
+        padding: 5px 8px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: white;
+        font-size: 11px;
+        overflow-wrap: anywhere;
+      }
+      .priority-row input {
+        grid-column: 1;
+        grid-row: 1;
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+      }
+      .priority-row .delete-btn {
+        grid-column: 2;
+        grid-row: 4;
+        justify-self: start;
+      }
       .task {
         grid-template-columns: 24px minmax(0, 1fr);
         gap: 9px;
@@ -1056,8 +1111,8 @@ Sreerag
     function priorityRow(task) {
       const overdue = isOverdue(task);
       return `<div class="priority-row ${task.done ? "done" : ""} ${overdue ? "overdue" : ""}">
-        <span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span>
-        <label>${overdue ? `<span class="tag warning">!</span> ` : ""}${escapeHtml(task.title)}</label>
+        <div class="priority-badges"><span class="tag ${tagClass(task.priority)}">${escapeHtml(task.priority)}</span>${overdue ? `<span class="tag warning">!</span>` : ""}</div>
+        <label>${escapeHtml(task.title)}</label>
         <span class="due">${escapeHtml(task.due || "This week")}</span>
         <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask('${task.id}')" aria-label="Mark task done">
         <button class="delete-btn" type="button" onclick="deleteTask('${task.id}')">Remove</button>
