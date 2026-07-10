@@ -253,7 +253,13 @@
     }
 
     details.card > summary::-webkit-details-marker { display: none; }
+    details.card:not([open]) {
+      grid-column: span 4;
+      padding: 16px 18px;
+      align-self: start;
+    }
     details.card:not([open]) > summary { margin-bottom: 0; }
+    details.card[open] { grid-column: span 12; }
     details.card > summary .collapse-icon::before { content: "Hide"; }
     details.card:not([open]) > summary .collapse-icon::before { content: "Show"; }
 
@@ -498,8 +504,8 @@
 
     .spark {
       position: absolute;
-      width: 8px;
-      height: 8px;
+      width: 11px;
+      height: 11px;
       border-radius: 999px;
       background: var(--accent);
       animation: spark-pop .72s ease-out forwards;
@@ -596,7 +602,19 @@
               <option value="milestone">Professional milestone</option>
               <option value="daily">Daily / routine</option>
             </select>
-            <input id="taskDue" placeholder="Due day or date" />
+            <select id="taskDuePreset">
+              <option value="This week">This week</option>
+              <option value="Daily">Daily / no due</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+              <option value="Sunday">Sunday</option>
+              <option value="Weekend">Weekend</option>
+            </select>
+            <input id="taskDue" placeholder="Optional custom due/date" />
             <button class="wide" type="submit">Add To Tracker</button>
           </form>
         </div>
@@ -656,11 +674,11 @@ Sreerag
           <div class="card-title"><h3>Priority Dashboard</h3><span class="pill" id="nandanaPriorityCount">0 tasks</span></div>
           <div id="nandanaPriorityList"></div>
         </div>
-        <details class="card span-4" open>
+        <details class="card span-4">
           <summary class="card-title"><h3>Future Work</h3><span class="pill collapse-icon"></span></summary>
           <div class="lane-list" id="nandanaFutureList"></div>
         </details>
-        <details class="card span-6" open>
+        <details class="card span-6">
           <summary class="card-title"><h3>Work Planner</h3><span class="pill collapse-icon"></span></summary>
           <div class="grid" id="nandanaDayPlanList"></div>
         </details>
@@ -690,7 +708,7 @@ Sreerag
           <div class="card-title"><h3>To Do</h3><span class="pill" id="sreeragTodoCount">0 tasks</span></div>
           <div class="task-list" id="sreeragTodoList"></div>
         </div>
-        <details class="card span-4" open>
+        <details class="card span-4">
           <summary class="card-title"><h3>Ticket Board</h3><span class="pill collapse-icon"></span></summary>
           <div class="lane-list" id="sreeragTicketList"></div>
         </details>
@@ -883,23 +901,23 @@ Sreerag
     function renderNandana(nandana) {
       document.getElementById("nandanaPriorityCount").textContent = nandana.length + " task" + (nandana.length === 1 ? "" : "s");
       document.getElementById("nandanaPriorityList").innerHTML = nandana.length ? sortTasks(nandana).map(priorityRow).join("") : empty("No Nandana tasks match this view.");
-      const dailyTasks = nandana.filter(task => normalizeCategory(task.category) === "daily");
+      const dailyTasks = nandana.filter(isDailyHabitTask);
       const weekendTasks = nandana.filter(task => normalizeCategory(task.category) !== "daily" && isWeekendTask(task));
       const personalTasks = nandana.filter(task => normalizeCategory(task.category) === "personal" && !isWeekendTask(task));
-      renderTaskList("nandanaFutureList", nandana.filter(task => normalizeCategory(task.category) === "milestone"));
+      renderTaskList("nandanaFutureList", nandana.filter(task => normalizeCategory(task.category) === "milestone" && !isDailyHabitTask(task)));
       renderTaskList("nandanaPersonalList", personalTasks);
       renderHabitRows("nandanaHabitRows", dailyTasks);
       renderTaskList("nandanaWeekendList", weekendTasks);
-      renderTaskList("nandanaMilestoneList", nandana.filter(task => normalizeCategory(task.category) === "milestone"));
-      renderDayPlan("nandanaDayPlanList", nandana.filter(task => normalizeCategory(task.category) === "work" || normalizeCategory(task.category) === "milestone"));
+      renderTaskList("nandanaMilestoneList", nandana.filter(task => normalizeCategory(task.category) === "milestone" && !isDailyHabitTask(task)));
+      renderDayPlan("nandanaDayPlanList", nandana.filter(task => !isDailyHabitTask(task) && (normalizeCategory(task.category) === "work" || normalizeCategory(task.category) === "milestone")));
     }
 
     function renderSreerag(sreerag) {
       document.getElementById("sreeragTodoCount").textContent = sreerag.length + " task" + (sreerag.length === 1 ? "" : "s");
       renderTaskList("sreeragTodoList", sreerag);
-      renderTaskList("sreeragTicketList", sreerag.filter(task => normalizeCategory(task.category) === "work"));
-      renderTaskList("sreeragWantList", sreerag.filter(task => normalizeCategory(task.category) === "milestone" || normalizeCategory(task.category) === "personal"));
-      renderHabitRows("sreeragHabitRows", sreerag.filter(task => normalizeCategory(task.category) === "daily"));
+      renderTaskList("sreeragTicketList", sreerag.filter(task => normalizeCategory(task.category) === "work" && !isDailyHabitTask(task)));
+      renderTaskList("sreeragWantList", sreerag.filter(task => !isDailyHabitTask(task) && (normalizeCategory(task.category) === "milestone" || normalizeCategory(task.category) === "personal")));
+      renderHabitRows("sreeragHabitRows", sreerag.filter(isDailyHabitTask));
     }
 
     function renderTaskList(id, list) {
@@ -967,7 +985,7 @@ Sreerag
         title,
         priority: normalizePriority(document.getElementById("taskPriority").value),
         category: normalizeCategory(document.getElementById("taskCategory").value),
-        due: document.getElementById("taskDue").value.trim() || "This week",
+        due: selectedDue(),
         done: false,
         habitDays: {}
       });
@@ -1007,6 +1025,13 @@ Sreerag
         const category = normalizeCategory(parts[3] || guessCategory(title, priority));
         return [{ id: makeId(), owner, title, due, priority, category, done: false, habitDays: {} }];
       });
+    }
+
+    function selectedDue() {
+      const customDue = document.getElementById("taskDue").value.trim();
+      if (customDue) return customDue;
+      const presetDue = document.getElementById("taskDuePreset").value;
+      return document.getElementById("taskCategory").value === "daily" && presetDue === "This week" ? "Daily" : presetDue;
     }
 
     function loadCurrentIntoPasteBox() {
@@ -1171,6 +1196,13 @@ Sreerag
       return /\b(weekend|saturday|sunday|sat|sun)\b/.test(text);
     }
 
+    function isDailyHabitTask(task) {
+      if (!task || isWeekendTask(task)) return false;
+      const due = String(task.due || "").trim().toLowerCase();
+      const title = String(task.title || "").toLowerCase();
+      return due === "" || due === "daily" || due === "everyday" || /\bdaily\b/.test(title);
+    }
+
     function compareHabitTasks(a, b) {
       const aIndex = coreHabitOrder.indexOf(String(a.title || "").toLowerCase());
       const bIndex = coreHabitOrder.indexOf(String(b.title || "").toLowerCase());
@@ -1200,7 +1232,7 @@ Sreerag
     }
 
     function taskMatchesDay(task, day) {
-      if (normalizeCategory(task.category) === "daily") return true;
+      if (isDailyHabitTask(task)) return true;
       return dueDayKeys(task).includes(day);
     }
 
@@ -1242,10 +1274,10 @@ Sreerag
       const colors = ["#6f5cff", "#ffcc57", "#108548", "#1f6feb", "#c83532"];
       const centerX = window.innerWidth / 2;
       const centerY = Math.max(160, window.innerHeight * .32);
-      for (let i = 0; i < 34; i++) {
+      for (let i = 0; i < 58; i++) {
         const spark = document.createElement("span");
-        const angle = (Math.PI * 2 * i) / 34;
-        const distance = 70 + Math.random() * 95;
+        const angle = (Math.PI * 2 * i) / 58;
+        const distance = 110 + Math.random() * 150;
         spark.className = "spark";
         spark.style.left = centerX + "px";
         spark.style.top = centerY + "px";
